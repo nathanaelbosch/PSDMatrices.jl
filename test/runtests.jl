@@ -1,6 +1,8 @@
 using PSDMats
 using Test
 
+using LinearAlgebra
+
 @testset "PSDMats.jl" begin
     # Write your tests here.
     d = 5
