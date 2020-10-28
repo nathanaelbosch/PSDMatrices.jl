@@ -16,6 +16,7 @@ makedocs(;
     ],
 )
 
-deploydocs(;
+deploydocs(
     repo="github.com/nathanaelbosch/PSDMatrices.jl",
+    devbranch="main"
 )
