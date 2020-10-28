@@ -3,7 +3,7 @@ using Documenter
 
 makedocs(;
     modules=[PSDMats],
-    authors="Nathanael Bosch <nathanael.bosch@tum.de> and contributors",
+    authors="Nathanael Bosch <nathanael.bosch@gmail.com> and contributors",
     repo="https://github.com/nathanaelbosch/PSDMats.jl/blob/{commit}{path}#L{line}",
     sitename="PSDMats.jl",
     format=Documenter.HTML(;
