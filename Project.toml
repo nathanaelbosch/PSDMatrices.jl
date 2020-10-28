@@ -1,4 +1,4 @@
-name = "PSDMats"
+name = "PSDMatrices"
 uuid = "fe68d972-6fd8-4755-bdf0-97d4c54cefdc"
 authors = ["Nathanael Bosch <nathanael.bosch@gmail.com> and contributors"]
 version = "0.1.0"

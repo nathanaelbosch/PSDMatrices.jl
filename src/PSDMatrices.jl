@@ -1,11 +1,11 @@
-module PSDMats
+module PSDMatrices
 
 using LinearAlgebra
 import Base: +, *, /, \, ==, inv, Matrix, kron, copy
 
 # Write your package code here.
-include("psdmat.jl")
+include("psdmatrix.jl")
 
-export PSDMat
+export PSDMatrix
 
 end

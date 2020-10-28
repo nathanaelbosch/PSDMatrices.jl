@@ -1,12 +1,12 @@
 ```@meta
-CurrentModule = PSDMats
+CurrentModule = PSDMatrices
 ```
 
-# PSDMats
+# PSDMatrices
 
 ```@index
 ```
 
 ```@autodocs
-Modules = [PSDMats]
+Modules = [PSDMatrices]
 ```

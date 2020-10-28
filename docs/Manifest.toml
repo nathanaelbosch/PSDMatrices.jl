@@ -50,7 +50,7 @@ uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
 [[Mmap]]
 uuid = "a63ad114-7e13-5084-954f-fe012c677804"
 
-[[PSDMats]]
+[[PSDMatrices]]
 path = ".."
 uuid = "fe68d972-6fd8-4755-bdf0-97d4c54cefdc"
 version = "0.1.0"
