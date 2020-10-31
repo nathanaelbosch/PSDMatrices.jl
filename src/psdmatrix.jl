@@ -21,13 +21,13 @@ inv(a::PSDMatrix) = (Li = inv(a.L); Li'Li)
 
 
 function X_A_Xt(A::PSDMatrix, X::AbstractMatrix)
-    Q, R = qr(A.L' * X')
-    L = LowerTriangular(R')
+    L, _ = lq(Matrix(X*A.L))
+    L = LowerTriangular(L)
     return PSDMatrix(L)
 end
 
 function +(A::PSDMatrix, B::PSDMatrix)
-    Q, R = qr([A.L B.L]')
-    L = LowerTriangular(R')
+    L, _ = lq([A.L B.L])
+    L = LowerTriangular(L)
     return PSDMatrix(L)
 end
