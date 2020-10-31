@@ -1,8 +1,8 @@
 using LinearAlgebra
 abstract type AbstractPSDMatrix{T<:Real} <: AbstractMatrix{T} end
-struct PSDMatrix{T<:Real,LT<:LowerTriangular{T},MT<:AbstractMatrix{T}} <: AbstractPSDMatrix{T}
-    L::LT
-    mat::MT
+struct PSDMatrix{T<:Real} <: AbstractPSDMatrix{T}
+    L::LowerTriangular{T,Matrix{T}}
+    mat::Matrix{T}
 end
 PSDMatrix(mat::Matrix) = error("Instantiation from Matrix is not yet implemented")
 PSDMatrix(L::LowerTriangular) = PSDMatrix(L, L * L')
