@@ -14,6 +14,8 @@ using LinearAlgebra
     @test all(A .== LLT)
     @test size(A) == size(LLT)
 
+    @test PSDMatrix(Matrix(A)) ≈ A
+
     @test copy(A) isa PSDMatrix
     B = PSDMatrix(LowerTriangular(rand(d,d)))
     copy!(B, A)
@@ -36,4 +38,5 @@ using LinearAlgebra
     LLT2 = L2*L2'
     @test A+B isa PSDMatrix
     @test A+B ≈ LLT+LLT2
+
 end

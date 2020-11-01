@@ -4,7 +4,17 @@ struct PSDMatrix{T<:Real} <: AbstractPSDMatrix{T}
     L::LowerTriangular{T,Matrix{T}}
     mat::Matrix{T}
 end
-PSDMatrix(mat::Matrix) = error("Instantiation from Matrix is not yet implemented")
+function PSDMatrix(mat::Matrix)
+    if !(mat ≈ mat') error("Matrix not symmetric") end
+    mat = Symmetric(mat)
+    vals, U = eigen(mat)
+    if any(vals .< 0) error("Matrix not positive semi definite") end
+    D = Diagonal(vals)
+    # A ≈ U * D * U'
+    L, Q = lq(U * sqrt.(D))
+    # A ≈ L*L'
+    return PSDMatrix(LowerTriangular(L))
+end
 PSDMatrix(L::LowerTriangular) = PSDMatrix(L, L * L')
 
 Base.size(a::PSDMatrix) = size(a.mat)
