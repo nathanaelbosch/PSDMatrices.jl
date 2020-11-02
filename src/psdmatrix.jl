@@ -26,6 +26,8 @@ Base.copy!(dst::PSDMatrix, src::PSDMatrix) = (dst.L .= src.L; dst.mat .= src.mat
 Base.Matrix(a::PSDMatrix) = copy(a.mat)
 LinearAlgebra.diag(a::PSDMatrix) = diag(a.mat)
 
+cholesky(A::PSDMatrix) = cholesky(A.mat)
+
 inv(a::PSDMatrix) = (Li = inv(a.L); Li'Li)
 \(a::PSDMatrix, x::AbstractVecOrMat) = a.L' \ (a.L \ x)
 
