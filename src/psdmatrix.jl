@@ -31,6 +31,14 @@ cholesky(A::PSDMatrix) = cholesky(A.mat)
 inv(a::PSDMatrix) = (Li = inv(a.L); Li'Li)
 \(a::PSDMatrix, x::AbstractVecOrMat) = a.L' \ (a.L \ x)
 
+function *(c::T, A::PSDMatrix{S}) where {S<:Real, T<:Real}
+    if c < 0
+        return Matrix(A)*c
+    else
+        return PSDMatrix(A.L * sqrt(c))
+    end
+end
+*(A::PSDMatrix{S}, c::T) where {S<:Real, T<:Real} = c*A
 
 function X_A_Xt(A::PSDMatrix, X::AbstractMatrix)
     L, _ = lq(Matrix(X*A.L))
