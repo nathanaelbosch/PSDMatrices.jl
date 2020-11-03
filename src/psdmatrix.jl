@@ -1,5 +1,3 @@
-using LinearAlgebra
-
 const LT = Union{Diagonal, LowerTriangular}
 
 abstract type AbstractPSDMatrix{T<:Real} <: AbstractMatrix{T} end
@@ -27,7 +25,7 @@ Base.copy(A::PSDMatrix) = PSDMatrix(copy(A.L), copy(A.mat))
 Base.copy!(dst::PSDMatrix, src::PSDMatrix) = (dst.L .= src.L; dst.mat .= src.mat)
 
 Base.Matrix(a::PSDMatrix) = copy(a.mat)
-LinearAlgebra.diag(a::PSDMatrix) = diag(a.mat)
+diag(a::PSDMatrix) = diag(a.mat)
 
 cholesky(A::PSDMatrix) = cholesky(A.mat)
 
