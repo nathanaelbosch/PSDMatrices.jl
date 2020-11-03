@@ -5,7 +5,7 @@ using PSDMatrices: X_A_Xt
 using LinearAlgebra
 
 @testset "PSDMatrices.jl" begin
-    # Write your tests here.
+
     d = 5
     L = LowerTriangular(randn(d,d))
     LLT = L*L'
@@ -13,6 +13,7 @@ using LinearAlgebra
     @test A == LLT
     @test all(A .== LLT)
     @test size(A) == size(LLT)
+    @test A[:] == LLT[:]
 
     @test PSDMatrix(Matrix(A)) ≈ A
 
@@ -33,10 +34,19 @@ using LinearAlgebra
     @test X_A_Xt(A, X) isa PSDMatrix
     @test X_A_Xt(A, X) ≈ X*A*X'
 
+    D = Diagonal(rand(d))
+    @test X_A_Xt(A, D) isa PSDMatrix
+    @test X_A_Xt(A, D) ≈ D*A*D'
+
     L2 = LowerTriangular(randn(d,d))
     B = PSDMatrix(L2)
     LLT2 = L2*L2'
     @test A+B isa PSDMatrix
     @test A+B ≈ LLT+LLT2
 
+    @test cholesky(A) == cholesky(LLT)
+
+    @test rand()*A isa PSDMatrix
+    @test 0*A isa PSDMatrix
+    @test !(-1*A isa PSDMatrix)
 end
