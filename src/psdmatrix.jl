@@ -15,7 +15,7 @@ function PSDMatrix(mat::Matrix)
     # A ≈ L*L'
     return PSDMatrix(LowerTriangular(L))
 end
-PSDMatrix(L::LowerTriangular) = PSDMatrix(L, L * L')
+PSDMatrix(L::LowerTriangular) = (nonnegativediag!(L); PSDMatrix(L, L * L'))
 
 Base.size(a::PSDMatrix) = size(a.mat)
 Base.getindex(a::PSDMatrix, i::Int) = getindex(a.mat, i)
@@ -42,12 +42,17 @@ end
 
 function X_A_Xt(A::PSDMatrix, X::AbstractMatrix)
     L, _ = lq(Matrix(X*A.L))
-    L = LowerTriangular(L)
-    return PSDMatrix(L)
+    return PSDMatrix(LowerTriangular(L))
 end
 
 function +(A::PSDMatrix, B::PSDMatrix)
     L, _ = lq([A.L B.L])
-    L = LowerTriangular(L)
-    return PSDMatrix(L)
+    return PSDMatrix(LowerTriangular(L))
+end
+
+
+function nonnegativediag!(L::LowerTriangular)
+    signs = signbit.(diag(L))
+    if !any(signs) return end
+    L .= L * Diagonal(1 .- 2 .* signs)
 end
