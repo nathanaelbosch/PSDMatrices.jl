@@ -1,4 +1,7 @@
 using LinearAlgebra
+
+const LT = Union{Diagonal, LowerTriangular}
+
 abstract type AbstractPSDMatrix{T<:Real} <: AbstractMatrix{T} end
 struct PSDMatrix{T<:Real} <: AbstractPSDMatrix{T}
     L::LowerTriangular{T,Matrix{T}}
@@ -44,6 +47,8 @@ function X_A_Xt(A::PSDMatrix, X::AbstractMatrix)
     L, _ = lq(Matrix(X*A.L))
     return PSDMatrix(LowerTriangular(L))
 end
+X_A_Xt(A::PSDMatrix, X::LT) = PSDMatrix(X*A.L)
+
 
 function +(A::PSDMatrix, B::PSDMatrix)
     L, _ = lq([A.L B.L])
