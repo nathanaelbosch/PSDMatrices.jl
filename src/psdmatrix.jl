@@ -19,7 +19,6 @@ end
 PSDMatrix(L::LowerTriangular) = (nonnegativediag!(L); PSDMatrix(L, L * L'))
 
 Base.size(a::PSDMatrix) = size(a.mat)
-Base.getindex(a::PSDMatrix, i::Int) = getindex(a.mat, i)
 Base.getindex(a::PSDMatrix, I::Vararg{Int, N}) where {N} = getindex(a.mat, I...)
 Base.copy(A::PSDMatrix) = PSDMatrix(copy(A.L), copy(A.mat))
 Base.copy!(dst::PSDMatrix, src::PSDMatrix) = (dst.L .= src.L; dst.mat .= src.mat)

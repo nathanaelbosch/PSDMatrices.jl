@@ -46,7 +46,9 @@ using LinearAlgebra
 
     @test cholesky(A) == cholesky(LLT)
 
-    @test rand()*A isa PSDMatrix
+    c = rand()
+    @test c*A isa PSDMatrix
     @test 0*A isa PSDMatrix
     @test !(-1*A isa PSDMatrix)
+    @test c*A == A*c
 end
