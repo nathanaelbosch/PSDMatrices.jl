@@ -41,15 +41,15 @@ end
 *(A::PSDMatrix{S}, c::T) where {S<:Real, T<:Real} = c*A
 
 function X_A_Xt(A::PSDMatrix, X::AbstractMatrix)
-    L, _ = lq(Matrix(X*A.L))
-    return PSDMatrix(LowerTriangular(L))
+    _, R = qr((X*A.L)')
+    return PSDMatrix(LowerTriangular(collect(R')))
 end
 X_A_Xt(A::PSDMatrix, X::LT) = PSDMatrix(X*A.L)
 
 
 function +(A::PSDMatrix, B::PSDMatrix)
-    L, _ = lq([A.L B.L])
-    return PSDMatrix(LowerTriangular(L))
+    Q, R = qr([A.L B.L]')
+    return PSDMatrix(LowerTriangular(collect(R')))
 end
 
 
