@@ -56,5 +56,5 @@ end
 function nonnegativediag!(L::LowerTriangular)
     signs = signbit.(diag(L))
     if !any(signs) return end
-    L .= L * Diagonal(1 .- 2 .* signs)
+    L.data .*= (1 .- 2 .* signs)'
 end

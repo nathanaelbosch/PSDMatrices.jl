@@ -51,4 +51,9 @@ using LinearAlgebra
     @test 0*A isa PSDMatrix
     @test !(-1*A isa PSDMatrix)
     @test c*A == A*c
+
+    @testset "BigFloats" begin
+        L = LowerTriangular(big.(randn(d,d)))
+        @test PSDMatrix(L) isa PSDMatrix
+    end
 end
