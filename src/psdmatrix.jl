@@ -12,9 +12,9 @@ function PSDMatrix(mat::Matrix)
     if any(vals .< 0) error("Matrix not positive semi definite") end
     D = Diagonal(vals)
     # A ≈ U * D * U'
-    L, Q = lq(U * sqrt.(D))
+    Q, R = qr(sqrt.(D)*U')
     # A ≈ L*L'
-    return PSDMatrix(LowerTriangular(L))
+    return PSDMatrix(LowerTriangular(collect(R')))
 end
 PSDMatrix(L::LowerTriangular) = (nonnegativediag!(L); PSDMatrix(L, L * L'))
 
