@@ -51,6 +51,8 @@ using LinearAlgebra
     @test 0*A isa PSDMatrix
     @test !(-1*A isa PSDMatrix)
     @test c*A == A*c
+        @test det(A) ≈ det(LLT)
+        @test logdet(A) ≈ logdet(LLT)
 
     @testset "BigFloats" begin
         L = LowerTriangular(big.(randn(d,d)))

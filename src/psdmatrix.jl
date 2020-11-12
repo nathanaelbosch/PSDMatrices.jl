@@ -25,6 +25,8 @@ Base.copy!(dst::PSDMatrix, src::PSDMatrix) = (dst.L .= src.L; dst.mat .= src.mat
 
 Base.Matrix(a::PSDMatrix) = copy(a.mat)
 diag(a::PSDMatrix) = diag(a.mat)
+det(Σ::PSDMatrix) = prod(diag(Σ.L).^2)
+logdet(Σ::PSDMatrix) = sum(2*log.(diag(Σ.L)))
 
 cholesky(A::PSDMatrix) = cholesky(A.mat)
 

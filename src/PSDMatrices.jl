@@ -1,7 +1,7 @@
 module PSDMatrices
 
 using LinearAlgebra
-import LinearAlgebra: cholesky, diag
+import LinearAlgebra: cholesky, diag, det, logdet
 
 import Base: +, *, /, \, ==, inv, Matrix, kron, copy
 
