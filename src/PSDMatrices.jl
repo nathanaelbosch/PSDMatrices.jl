@@ -49,15 +49,30 @@ function X_A_Xt(A::PSDMatrix, X::AbstractMatrix)
 end
 
 
+function add_cholesky(A::PSDMatrix, B::PSDMatrix)
+    sum_dense = todense(A) + todense(B)
+    factor = cholesky(sum_dense).L
+    return PSDMatrix(factor)
+end
+
+
+function add_qr(A::PSDMatrix, B::PSDMatrix)
+    stack = hcat(A.L, B.L)
+    matrix = PSDMatrix(stack)
+    return choleskify_factor(matrix)
+end
+
+
 function choleskify_factor(M::PSDMatrix)
-    QR = qr(M.L')
-    R = triu(QR.factors)
+    R = qr(M.L').R
     R = nonnegative_diagonal(R)
     return PSDMatrix(LowerTriangular(R'))
 end
 
 export PSDMatrix
 export todense
+export add_cholesky
+export add_qr
 export choleskify_factor
 export X_A_Xt
 
