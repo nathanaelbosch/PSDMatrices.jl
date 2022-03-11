@@ -13,7 +13,7 @@ M3 = big.([1.0 1.0; 2.0 20.0])
 
 @testset "$M" for M in (M1, M2, M3)
 
-    S = SquareRootMatrix(M)
+    S = PSDMatrix(M)
 
     @test eltype(S) == eltype(M)
 
