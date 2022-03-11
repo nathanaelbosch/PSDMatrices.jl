@@ -1,62 +1,44 @@
-const LT = Union{Diagonal, LowerTriangular}
 
-abstract type AbstractPSDMatrix{T<:Real} <: AbstractMatrix{T} end
-struct PSDMatrix{T<:Real} <: AbstractPSDMatrix{T}
-    L::LowerTriangular{T,Matrix{T}}
-    mat::Matrix{T}
-end
-function PSDMatrix(mat::Matrix)
-    if !(mat ≈ mat') error("Matrix not symmetric") end
-    mat = Symmetric(mat)
-    vals, U = eigen(mat)
-    if any(vals .< 0) error("Matrix not positive semi definite") end
-    D = Diagonal(vals)
-    # A ≈ U * D * U'
-    Q, R = qr(sqrt.(D)*U')
-    # A ≈ L*L'
-    return PSDMatrix(LowerTriangular(collect(R')))
-end
-PSDMatrix(L::LowerTriangular) = (nonnegativediag!(L); PSDMatrix(L, L * L'))
+# Custom functions
 
-Base.size(a::PSDMatrix) = size(a.mat)
-Base.getindex(a::PSDMatrix, I::Vararg{Int, N}) where {N} = getindex(a.mat, I...)
-Base.copy(A::PSDMatrix) = PSDMatrix(copy(A.L), copy(A.mat))
-Base.copy!(dst::PSDMatrix, src::PSDMatrix) = (dst.L .= src.L; dst.mat .= src.mat)
-
-Base.Matrix(a::PSDMatrix) = copy(a.mat)
-diag(a::PSDMatrix) = diag(a.mat)
-det(Σ::PSDMatrix) = prod(diag(Σ.L).^2)
-logdet(Σ::PSDMatrix) = sum(2*log.(diag(Σ.L)))
-
-cholesky(A::PSDMatrix) = cholesky(A.mat)
-
-inv(a::PSDMatrix) = (Li = inv(a.L); Li'Li)
-\(a::PSDMatrix, x::AbstractVecOrMat) = a.L' \ (a.L \ x)
-
-function *(c::T, A::PSDMatrix{S}) where {S<:Real, T<:Real}
-    if c < 0
-        return Matrix(A)*c
-    else
-        return PSDMatrix(A.L * sqrt(c))
-    end
-end
-*(A::PSDMatrix{S}, c::T) where {S<:Real, T<:Real} = c*A
-
-function X_A_Xt(A::PSDMatrix, X::AbstractMatrix)
-    _, R = qr((X*A.L)')
-    return PSDMatrix(LowerTriangular(collect(R')))
-end
-X_A_Xt(A::PSDMatrix, X::LT) = PSDMatrix(X*A.L)
-
-
-function +(A::PSDMatrix, B::PSDMatrix)
-    Q, R = qr([A.L B.L]')
-    return PSDMatrix(LowerTriangular(collect(R')))
+function todense(M::SquareRootMatrix)
+    return M.L * M.L'
 end
 
 
-function nonnegativediag!(L::LowerTriangular)
+function X_A_Xt(A::SquareRootMatrix, X::AbstractMatrix)
+    return SquareRootMatrix(X * A.L)
+end
+
+
+# Base overloads
+
+size(M::SquareRootMatrix) = (size(M.L, 1), size(M.L, 1))
+inv(M::SquareRootMatrix) = SquareRootMatrix(inv(M.L'))
+\(A::SquareRootMatrix, B::AbstractVecOrMat) = A.L' \ (A.L \ B)
+/(B::AbstractVecOrMat, A::SquareRootMatrix) = B / A.L' / A.L
+copy(M::SquareRootMatrix) = SquareRootMatrix(copy(M.L))
+==(M1::SquareRootMatrix, M2::SquareRootMatrix) = M1.L == M2.L  # todo: same as isequal()?!
+
+
+function cholesky(M::SquareRootMatrix)
+    QR = qr(M.L')
+    R = triu(QR.factors)
+    R_pos_diag = nonnegative_diagonal(R')
+    return Cholesky(UpperTriangular(R))
+end
+
+
+# LinearAlgebra overloads
+
+det(M::SquareRootMatrix) = det(M.L)^2
+logdet(M::SquareRootMatrix) = 2 * logdet(M.L)
+
+
+function nonnegative_diagonal(L)
     signs = signbit.(diag(L))
-    if !any(signs) return end
-    L.data .*= (1 .- 2 .* signs)'
+    if !any(signs)
+        return
+    end
+    return L .*= (1 .- 2 .* signs)'
 end
