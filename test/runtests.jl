@@ -10,7 +10,7 @@ eltypes = (Int64, Float64, BigFloat)
         M = t.(Mbase)
         S = PSDMatrix(M)
 
-        @test eltype(S) == eltype(M) == t
+        @test eltype(S) == t
 
         @testset "My exports" begin
             @test norm(todense(S) - M * M') == 0.0
