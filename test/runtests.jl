@@ -32,9 +32,9 @@ not_square(M) = (size(M, 1) != size(M, 2))
                 @test S == S
                 @test copy(S) == S
                 @test !(copy(S) === S)
+                @test S \ X ≈ todense(S) \ X
+                @test X / S ≈ X / todense(S) skip = not_square(M)
                 @test todense(inv(S)) ≈ inv(todense(S)) skip = not_square(M)
-                @test S \ M ≈ todense(S) \ M skip = not_square(M)
-                @test M / S ≈ M / todense(S) skip = not_square(M)
             end
 
             @testset "LinearAlgebra" begin
