@@ -2,7 +2,8 @@
 module PSDMatrices
 
 import Base: \, /, size, inv, copy, ==
-import LinearAlgebra: cholesky, det, logdet, qr, triu, diag, UpperTriangular
+using LinearAlgebra
+import LinearAlgebra: det, logdet
 
 struct PSDMatrix{T,Ltype} <: AbstractMatrix{T}
     L::Ltype
