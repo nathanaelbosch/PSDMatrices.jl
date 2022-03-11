@@ -14,6 +14,7 @@ M3 = big.([1.0 1.0; 2.0 20.0])
     @testset "My exports" begin
         @test norm(todense(S) - M * M') == 0.0
         @test todense(X_A_Xt(S, M)) ≈ M * todense(S) * M'
+        @test todense(X_A_Xt(A=S, X=M)) ≈ M * todense(S) * M'
         @test choleskify_factor(S).L ≈ cholesky(todense(S)).U'
         @test todense(add_cholesky(S, S)) ≈ todense(S) + todense(S)
         @test todense(add_qr(S, S)) ≈ todense(S) + todense(S)
