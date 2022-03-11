@@ -14,14 +14,15 @@ not_square(M) = (size(M, 1) != size(M, 2))
         @testset "eltype=$t" for t in eltypes
             M = t.(Mbase)
             S = PSDMatrix(M)
+            X = rand(size(S, 1), size(S, 2))
 
             @test eltype(S) == t
 
             @testset "My exports" begin
                 @test norm(todense(S) - M' * M) == 0.0
-                @test todense(X_A_Xt(S, M)) ≈ M * todense(S) * M' skip = not_square(M)
+                @test todense(X_A_Xt(S, X)) ≈ X * todense(S) * X' skip = not_square(M)
                 # todo
-                @test todense(X_A_Xt(A=S, X=M)) ≈ M * todense(S) * M' skip = not_square(M)  # todo
+                @test todense(X_A_Xt(A=S, X=X)) ≈ X * todense(S) * X' skip = not_square(M)  # todo
                 @test choleskify_factor(S).R ≈ cholesky(todense(S)).U skip = not_square(M)  # todo
                 @test todense(add_cholesky(S, S)) ≈ todense(S) + todense(S) skip =
                     not_square(M)  # todo
