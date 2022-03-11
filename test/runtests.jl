@@ -16,12 +16,12 @@ eltypes = (Int64, Float64, BigFloat)
             @test eltype(S) == t
 
             @testset "My exports" begin
-                @test norm(todense(S) - M * M') == 0.0
+                @test norm(todense(S) - M' * M) == 0.0
                 @test todense(X_A_Xt(S, M)) ≈ M * todense(S) * M' skip =
                     (size(M, 1) != size(M, 2))  # todo
                 @test todense(X_A_Xt(A=S, X=M)) ≈ M * todense(S) * M' skip =
                     (size(M, 1) != size(M, 2))  # todo
-                @test choleskify_factor(S).L ≈ cholesky(todense(S)).U' skip =
+                @test choleskify_factor(S).R ≈ cholesky(todense(S)).U skip =
                     (size(M, 1) != size(M, 2))  # todo
                 @test todense(add_cholesky(S, S)) ≈ todense(S) + todense(S) skip =
                     (size(M, 1) != size(M, 2))  # todo

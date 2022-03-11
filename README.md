@@ -13,7 +13,7 @@ Positive semi-definite matrices are widely used to describe [covariance matrices
 For strictly positive definite matrices, [PDMats.jl](https://github.com/JuliaStats/PDMasemi-ts.jl) provides a powerful Julia interface, but in many algorithms and applications, the covariances are not necessarily of full rank.
 /PSDMatrices.jl/ aims to fill this gap by providing a datatype for positive semi-definite matrices.
 
-Another major difference between /PDMats.jl/ and /PSDMatrices.jl/ is that /PSDMatrices.jl/ never assembles the full matrix $M$, but only acts on the square root matrices $M = L L^*$.
+Another major difference between /PDMats.jl/ and /PSDMatrices.jl/ is that /PSDMatrices.jl/ never assembles the full matrix $M$, but only acts on the square root matrices $M = R^*R$.
 
 ## Installation
 ```julia
