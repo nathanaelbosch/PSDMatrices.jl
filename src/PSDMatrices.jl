@@ -61,12 +61,10 @@ function add_qr(A::PSDMatrix, B::PSDMatrix)
     matrix = PSDMatrix(stack)
     return choleskify_factor(matrix)
 end
-add_qr(xs...) = reduce(add_qr, xs)
+
 
 function choleskify_factor(M::PSDMatrix)
-    QR = qr(M.L')
-    R = triu(QR.factors)
-    R = R[1:size(R, 2), :]
+    R = qr(M.L').R
     R = nonnegative_diagonal(R)
     return PSDMatrix(LowerTriangular(R'))
 end
