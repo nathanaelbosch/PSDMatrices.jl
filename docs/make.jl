@@ -7,9 +7,7 @@ makedocs(
     format=Documenter.HTML(
         canonical="https://nathanaelbosch.github.io/PSDMatrices.jl/stable",
     ),
-    pages=[
-        "Home" => "index.md",
-    ],
+    pages=["Home" => "index.md"],
 )
 
 deploydocs(repo="github.com/nathanaelbosch/PSDMatrices.jl", devbranch="main")

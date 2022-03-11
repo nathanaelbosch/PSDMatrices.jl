@@ -2,13 +2,11 @@ using Test
 using PSDMatrices
 using LinearAlgebra
 
-
 M1 = [1 1; 2 20]
 M2 = [1.0 1.0; 2.0 20.0]
 M3 = big.([1.0 1.0; 2.0 20.0])
 
 @testset "$M" for M in (M1, M2, M3)
-
     S = PSDMatrix(M)
 
     @test eltype(S) == eltype(M)
@@ -35,7 +33,5 @@ M3 = big.([1.0 1.0; 2.0 20.0])
         @test det(S) ≈ det(todense(S))
         @test logdet(S) ≈ logdet(todense(S))
     end
-
-
 end
 nothing
