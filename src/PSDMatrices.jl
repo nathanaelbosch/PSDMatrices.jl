@@ -54,7 +54,7 @@ function add_cholesky(A::PSDMatrix, B::PSDMatrix)
     factor = cholesky(sum_dense).L
     return PSDMatrix(factor)
 end
-add_cholesky(xs...) = reduce(add_cholesky, xs)
+
 
 function add_qr(A::PSDMatrix, B::PSDMatrix)
     stack = hcat(A.L, B.L)
