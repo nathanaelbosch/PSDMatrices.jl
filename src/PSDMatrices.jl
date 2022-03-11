@@ -36,9 +36,10 @@ function todense(M::PSDMatrix)
     return M.L * M.L'
 end
 
-function X_A_Xt(A::PSDMatrix, X::AbstractMatrix)
+function X_A_Xt(; A::PSDMatrix, X::AbstractMatrix)
     return PSDMatrix(X * A.L)
 end
+X_A_Xt(A::PSDMatrix, X::AbstractMatrix) = X_A_Xt(A=A, X=X)
 
 function add_cholesky(A::PSDMatrix, B::PSDMatrix)
     sum_dense = todense(A) + todense(B)
