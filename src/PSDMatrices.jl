@@ -21,6 +21,13 @@ function X_A_Xt(A::PSDMatrix, X::AbstractMatrix)
 end
 
 
+function choleskify_factor(M::PSDMatrix)
+    QR = qr(M.L')
+    R = triu(QR.factors)
+    R = nonnegative_diagonal(R)
+    return PSDMatrix(LowerTriangular(R'))
+end
+
 # Base overloads
 
 size(M::PSDMatrix) = (size(M.L, 1), size(M.L, 1))
@@ -31,12 +38,6 @@ copy(M::PSDMatrix) = PSDMatrix(copy(M.L))
 ==(M1::PSDMatrix, M2::PSDMatrix) = M1.L == M2.L  # todo: same as isequal()?!
 
 
-function cholesky(M::PSDMatrix)
-    QR = qr(M.L')
-    R = triu(QR.factors)
-    return Cholesky(UpperTriangular(nonnegative_diagonal(R)))
-end
-
 
 # LinearAlgebra overloads
 
@@ -44,17 +45,20 @@ det(M::PSDMatrix) = det(M.L)^2
 logdet(M::PSDMatrix) = 2 * logdet(M.L)
 
 
-function nonnegative_diagonal(L)
-    signs = signbit.(diag(L))
-    if !any(signs)
-        return
-    end
-    return L .*= (1 .- 2 .* signs)
+function nonnegative_diagonal(R)
+    signs = signbit.(diag(R))
+    R .*= (1 .- 2 .* signs)
+    return R
 end
+
+
+
+
 # Exports
 
 export PSDMatrix
 export todense
+export choleskify_factor
 export X_A_Xt
 
 end

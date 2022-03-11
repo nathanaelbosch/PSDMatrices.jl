@@ -20,10 +20,13 @@ M3 = big.([1.0 1.0; 2.0 20.0])
     @testset "My exports" begin
         @test norm(todense(S) - M * M') == 0.0
 
-        X = M
-        received = todense(X_A_Xt(S, X))
-        expected = X * todense(S) * X'
-        @test received ≈ expected
+        X = copy(M)
+        @test todense(X_A_Xt(S, X)) ≈ X * todense(S) * X'
+        A = choleskify_factor(S).L
+        B = cholesky(todense(S)).U'
+        @test A ≈ B
+
+
 
     end
 
@@ -44,10 +47,6 @@ M3 = big.([1.0 1.0; 2.0 20.0])
         @test det(S) ≈ det(todense(S))
 
         @test logdet(S) ≈ logdet(todense(S))
-
-        cholesky_dense = cholesky(todense(S)).L
-        cholesky_sparse = cholesky(S).L
-        @test cholesky(S).U ≈ cholesky(todense(S)).U rtol = 1e-14
 
     end
 
