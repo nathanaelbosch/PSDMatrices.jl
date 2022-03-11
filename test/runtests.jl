@@ -20,23 +20,21 @@ not_square(M) = (size(M, 1) != size(M, 2))
 
             @testset "My exports" begin
                 @test norm(todense(S) - M' * M) == 0.0
-                @test todense(X_A_Xt(S, X)) ≈ X * todense(S) * X' skip = not_square(M)
-                # todo
-                @test todense(X_A_Xt(A=S, X=X)) ≈ X * todense(S) * X' skip = not_square(M)  # todo
-                @test choleskify_factor(S).R ≈ cholesky(todense(S)).U skip = not_square(M)  # todo
-                @test todense(add_cholesky(S, S)) ≈ todense(S) + todense(S) skip =
-                    not_square(M)  # todo
-                @test todense(add_qr(S, S)) ≈ todense(S) + todense(S) skip = not_square(M)  # todo
+                @test todense(X_A_Xt(S, X)) ≈ X * todense(S) * X'
+                @test todense(X_A_Xt(A=S, X=X)) ≈ X * todense(S) * X'
+                @test choleskify_factor(S).R ≈ cholesky(todense(S)).U
+                @test todense(add_cholesky(S, S)) ≈ todense(S) + todense(S)
+                @test todense(add_qr(S, S)) ≈ todense(S) + todense(S)
             end
 
             @testset "Base" begin
-                @test todense(inv(S)) ≈ inv(todense(S)) skip = not_square(M)
                 @test size(S) == size(todense(S))
-                @test S \ M ≈ todense(S) \ M skip = not_square(M)
-                @test M / S ≈ M / todense(S) skip = not_square(M)
                 @test S == S
                 @test copy(S) == S
                 @test !(copy(S) === S)
+                @test todense(inv(S)) ≈ inv(todense(S)) skip = not_square(M)
+                @test S \ M ≈ todense(S) \ M skip = not_square(M)
+                @test M / S ≈ M / todense(S) skip = not_square(M)
             end
 
             @testset "LinearAlgebra" begin
