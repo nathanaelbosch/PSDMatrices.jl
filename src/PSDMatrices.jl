@@ -10,24 +10,6 @@ struct PSDMatrix{T,Ltype} <: AbstractMatrix{T}
     PSDMatrix(L::AbstractMatrix{T}) where {T} = new{T,typeof(L)}(L)
 end
 
-# Custom functions
-
-function todense(M::PSDMatrix)
-    return M.L * M.L'
-end
-
-
-function X_A_Xt(A::PSDMatrix, X::AbstractMatrix)
-    return PSDMatrix(X * A.L)
-end
-
-
-function choleskify_factor(M::PSDMatrix)
-    QR = qr(M.L')
-    R = triu(QR.factors)
-    R = nonnegative_diagonal(R)
-    return PSDMatrix(LowerTriangular(R'))
-end
 
 # Base overloads
 
@@ -55,7 +37,24 @@ end
 
 
 
-# Exports
+# Custom functions
+
+function todense(M::PSDMatrix)
+    return M.L * M.L'
+end
+
+
+function X_A_Xt(A::PSDMatrix, X::AbstractMatrix)
+    return PSDMatrix(X * A.L)
+end
+
+
+function choleskify_factor(M::PSDMatrix)
+    QR = qr(M.L')
+    R = triu(QR.factors)
+    R = nonnegative_diagonal(R)
+    return PSDMatrix(LowerTriangular(R'))
+end
 
 export PSDMatrix
 export todense
