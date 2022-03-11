@@ -2,14 +2,14 @@ using Test
 using PSDMatrices
 using LinearAlgebra
 
-M1 = [1 1; 2 20]
-M2 = [1.0 1.0; 2.0 20.0]
-M3 = big.([1.0 1.0; 2.0 20.0])
+Mbase = [1 1; 2 20]
+eltypes = (Int64, Float64, BigFloat)
 
-@testset "$M" for M in (M1, M2, M3)
+@testset "eltype=$t" for t in eltypes
+    M = t.(Mbase)
     S = PSDMatrix(M)
 
-    @test eltype(S) == eltype(M)
+    @test eltype(S) == eltype(M) == t
 
     @testset "My exports" begin
         @test norm(todense(S) - M * M') == 0.0
