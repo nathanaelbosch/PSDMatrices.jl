@@ -1,7 +1,7 @@
 
 module PSDMatrices
 
-import Base: \, /, size, inv, copy, ==
+import Base: \, /, size, inv, copy, ==, show
 using LinearAlgebra
 import LinearAlgebra: det, logdet
 
@@ -18,6 +18,16 @@ inv(M::PSDMatrix) = PSDMatrix(inv(M.R'))
 /(B::AbstractVecOrMat, A::PSDMatrix) = B / A.R / A.R'
 copy(M::PSDMatrix) = PSDMatrix(copy(M.R))
 ==(M1::PSDMatrix, M2::PSDMatrix) = M1.R == M2.R  # todo: same as isequal()?!
+# Base.show(io::IO, x::MyString) = print(io, x.s)
+show(io::IO, M::PSDMatrix) = begin
+    print(io, "$(size(M,1))x$(size(M,2)) $(typeof(M)); R=")
+    show(io, M.R)
+end
+show(io::IO, m::MIME"text/plain", M::PSDMatrix) = begin
+    println(io, "$(size(M,1))x$(size(M,2)) $(typeof(M)) ")
+    print(io, " Right square root: ")
+    show(io, m, M.R)
+end
 
 # LinearAlgebra overloads
 
