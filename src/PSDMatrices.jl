@@ -12,7 +12,7 @@ end
 
 # Base overloads
 
-size(M::PSDMatrix) = (size(M.R, 1), size(M.R, 1))
+size(M::PSDMatrix) = (size(M.R, 2), size(M.R, 2))
 inv(M::PSDMatrix) = PSDMatrix(inv(M.R'))
 \(A::PSDMatrix, B::AbstractVecOrMat) = A.R \ (A.R' \ B)
 /(B::AbstractVecOrMat, A::PSDMatrix) = B / A.R / A.R'
