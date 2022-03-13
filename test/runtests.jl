@@ -22,7 +22,7 @@ eltypes = (Int64, Float64, BigFloat)
             @test copy(S) == S
             @test !(copy(S) === S)
             @test typeof(similar(S)) == typeof(S)
-            @test (S2 = similar(S); copy!(S2, S); S2 == S)
+            (t != BigFloat) && @test (S2 = similar(S); copy!(S2, S); S2 == S)
             if size(M, 1) == size(M, 2)
                 @test todense(inv(S)) ≈ inv(todense(S))
             end
