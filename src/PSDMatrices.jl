@@ -40,6 +40,10 @@ function X_A_Xt(; A::PSDMatrix, X::AbstractMatrix)
     return PSDMatrix(A.R * X')
 end
 X_A_Xt(A::PSDMatrix, X::AbstractMatrix) = X_A_Xt(A=A, X=X)
+function X_A_Xt!(out::PSDMatrix, A::PSDMatrix, X::AbstractMatrix)
+    mul!(out.R, A.R, X')
+    return out
+end
 
 function add_cholesky(A::PSDMatrix, B::PSDMatrix)
     sum_dense = todense(A) + todense(B)
@@ -65,5 +69,6 @@ export add_cholesky
 export add_qr
 export choleskify_factor
 export X_A_Xt
+export X_A_Xt!
 
 end
