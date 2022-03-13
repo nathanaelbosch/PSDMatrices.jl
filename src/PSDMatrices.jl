@@ -1,7 +1,7 @@
 
 module PSDMatrices
 
-import Base: \, /, size, inv, copy, ==, show
+import Base: \, /, size, inv, copy, copy!, ==, show, similar
 using LinearAlgebra
 import LinearAlgebra: det, logdet
 
@@ -17,6 +17,12 @@ inv(M::PSDMatrix) = PSDMatrix(inv(M.R'))
 \(A::PSDMatrix, B::AbstractVecOrMat) = A.R \ (A.R' \ B)
 /(B::AbstractVecOrMat, A::PSDMatrix) = B / A.R / A.R'
 copy(M::PSDMatrix) = PSDMatrix(copy(M.R))
+similar(
+    M::PSDMatrix,
+    element_type::Type{T}=eltype(M),
+    dims::Tuple{Int64,Vararg{Int64,N}}=size(M),
+) where {T,N} = PSDMatrix(similar(M.R, element_type, dims))
+copy!(dst::PSDMatrix, src::PSDMatrix) = (copy!(dst.R, src.R); dst)
 ==(M1::PSDMatrix, M2::PSDMatrix) = M1.R == M2.R  # todo: same as isequal()?!
 function show(io::IO, M::PSDMatrix)
     print(io, "$(size(M,1))x$(size(M,2)) $(typeof(M)); R=")
@@ -45,9 +51,7 @@ function todense(M::PSDMatrix)
     return M.R' * M.R
 end
 
-function X_A_Xt(; A::PSDMatrix, X::AbstractMatrix)
-    return PSDMatrix(A.R * X')
-end
+X_A_Xt(; A::PSDMatrix, X::AbstractMatrix) = PSDMatrix(A.R * X')
 X_A_Xt(A::PSDMatrix, X::AbstractMatrix) = X_A_Xt(A=A, X=X)
 
 function add_cholesky(A::PSDMatrix, B::PSDMatrix)
