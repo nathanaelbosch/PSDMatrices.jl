@@ -17,11 +17,8 @@ inv(M::PSDMatrix) = PSDMatrix(inv(M.R'))
 \(A::PSDMatrix, B::AbstractVecOrMat) = A.R \ (A.R' \ B)
 /(B::AbstractVecOrMat, A::PSDMatrix) = B / A.R / A.R'
 copy(M::PSDMatrix) = PSDMatrix(copy(M.R))
-similar(
-    M::PSDMatrix,
-    element_type::Type{T}=eltype(M),
-    dims::Tuple{Int64,Vararg{Int64,N}}=size(M),
-) where {T,N} = PSDMatrix(similar(M.R, element_type, dims))
+similar(M::PSDMatrix, element_type::Type{T}=eltype(M)) where {T,N} =
+    PSDMatrix(similar(M.R, element_type))
 copy!(dst::PSDMatrix, src::PSDMatrix) = (copy!(dst.R, src.R); dst)
 ==(M1::PSDMatrix, M2::PSDMatrix) = M1.R == M2.R  # todo: same as isequal()?!
 function show(io::IO, M::PSDMatrix)
