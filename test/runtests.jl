@@ -25,6 +25,7 @@ eltypes = (Int64, Float64, BigFloat)
                 @test todense(inv(S)) ≈ inv(todense(S))
             end
             @test show(S) == nothing
+            @test show(stdout, MIME("text/plain"), S) == nothing
         end
 
         @testset "LinearAlgebra" begin
