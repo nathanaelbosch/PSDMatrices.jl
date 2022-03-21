@@ -24,7 +24,7 @@ show(io::IO, M::PSDMatrix) = begin
 end
 show(io::IO, m::MIME"text/plain", M::PSDMatrix) = begin
     println(io, "$(size(M,1))x$(size(M,2)) $(typeof(M)) ")
-    print(io, " Right square root: ")
+    print(io, " Right square root: R=")
     show(io, m, M.R)
 end
 
