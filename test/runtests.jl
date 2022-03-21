@@ -25,8 +25,8 @@ eltypes = (Int64, Float64, BigFloat)
             if size(M, 1) == size(M, 2)
                 @test todense(inv(S)) ≈ inv(todense(S))
             end
-            @suppress_out @test show(S) == nothing
-            @suppress_out @test show(stdout, MIME("text/plain"), S) == nothing
+            @suppress_out @test isnothing(show(S))
+            @suppress_out @test isnothing(show(stdout, MIME("text/plain"), S))
         end
 
         @testset "LinearAlgebra" begin
