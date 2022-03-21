@@ -1,6 +1,7 @@
 using Test
 using PSDMatrices
 using LinearAlgebra
+using Suppressor
 
 M_square = [1 1; 2 20]
 M_tall = [1 1; 2 20; 3 30]
@@ -26,8 +27,8 @@ eltypes = (Int64, Float64, BigFloat)
             if size(M, 1) == size(M, 2)
                 @test Matrix(inv(S)) ≈ inv(Matrix(S))
             end
-            @test show(S) == nothing
-            @test show(stdout, MIME("text/plain"), S) == nothing
+            @suppress_out @test isnothing(show(S))
+            @suppress_out @test isnothing(show(stdout, MIME("text/plain"), S))
         end
 
         @testset "LinearAlgebra" begin
@@ -35,8 +36,8 @@ eltypes = (Int64, Float64, BigFloat)
                 @test det(S) ≈ det(Matrix(S))
                 @test logdet(S) ≈ logdet(Matrix(S))
             else
-                @test_throws Exception det(S) ≈ det(Matrix(S))  # TODO: raise better error here?! (#16)
-                @test_throws Exception logdet(S) ≈ det(Matrix(S))  # TODO: raise better error here?! (#16)
+                @test_throws MethodError det(S) ≈ det(todense(S))
+                @test_throws MethodError logdet(S) ≈ det(todense(S))
             end
             if (size(M, 1) >= size(M, 2))
                 @test S \ X ≈ Matrix(S) \ X
