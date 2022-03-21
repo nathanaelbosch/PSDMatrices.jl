@@ -18,12 +18,14 @@ eltypes = (Int64, Float64, BigFloat)
 
         @testset "Base" begin
             @test eltype(S) == t
-            @test size(S) == size(todense(S))
+            @test size(S) == size(Matrix(S))
             @test S == S
             @test copy(S) == S
             @test !(copy(S) === S)
+            @test typeof(similar(S)) == typeof(S)
+            @test (S2 = similar(S); copy!(S2, S); S2 == S)
             if size(M, 1) == size(M, 2)
-                @test todense(inv(S)) ≈ inv(todense(S))
+                @test Matrix(inv(S)) ≈ inv(Matrix(S))
             end
             @suppress_out @test isnothing(show(S))
             @suppress_out @test isnothing(show(stdout, MIME("text/plain"), S))
@@ -31,26 +33,38 @@ eltypes = (Int64, Float64, BigFloat)
 
         @testset "LinearAlgebra" begin
             if size(M, 1) == size(M, 2)
-                @test det(S) ≈ det(todense(S))
-                @test logdet(S) ≈ logdet(todense(S))
+                @test det(S) ≈ det(Matrix(S))
+                @test logdet(S) ≈ logdet(Matrix(S))
             else
                 @test_throws DimensionMismatch det(S) ≈ det(todense(S))
                 @test_throws DimensionMismatch logdet(S) ≈ det(todense(S))
             end
             if (size(M, 1) >= size(M, 2))
-                @test S \ X ≈ todense(S) \ X
-                @test X / S ≈ X / todense(S)
+                @test S \ X ≈ Matrix(S) \ X
+                @test X / S ≈ X / Matrix(S)
             end
         end
 
         @testset "Exports" begin
-            @test norm(todense(S) - M' * M) == 0.0
-            @test todense(X_A_Xt(S, X)) ≈ X * todense(S) * X'
-            @test todense(X_A_Xt(A=S, X=X)) ≈ X * todense(S) * X'
-            @test todense(add_qr(S, S)) ≈ todense(S) + todense(S)
+            @test norm(Matrix(S) - M' * M) == 0.0
+            @test Matrix(X_A_Xt(S, X)) ≈ X * Matrix(S) * X'
+            @test Matrix(X_A_Xt(A=S, X=X)) ≈ X * Matrix(S) * X'
+            @test begin
+                product_eltype = typeof(one(eltype(X)) * one(eltype(S)))
+                S2 = PSDMatrix(zeros(product_eltype, size(S.R)...))
+                X_A_Xt!(S2, S, X)
+                Matrix(S2) ≈ Matrix(X_A_Xt(S, X))
+            end
+            @test begin
+                product_eltype = typeof(one(eltype(X)) * one(eltype(S)))
+                S2 = PSDMatrix(zeros(product_eltype, size(S.R)...))
+                X_A_Xt!(S2, A=S, X=X)
+                Matrix(S2) ≈ Matrix(X_A_Xt(S, X))
+            end
+            @test Matrix(add_qr(S, S)) ≈ Matrix(S) + Matrix(S)
             if (size(M, 1) >= size(M, 2))
-                @test choleskify_factor(S).R ≈ cholesky(todense(S)).U
-                @test todense(add_cholesky(S, S)) ≈ todense(S) + todense(S)
+                @test choleskify_factor(S).R ≈ cholesky(Matrix(S)).U
+                @test Matrix(add_cholesky(S, S)) ≈ Matrix(S) + Matrix(S)
             end
         end
     end
