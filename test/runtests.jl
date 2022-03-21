@@ -50,6 +50,12 @@ eltypes = (Int64, Float64, BigFloat)
                 X_A_Xt!(S2, S, X)
                 todense(S2) ≈ todense(X_A_Xt(S, X))
             end
+            @test begin
+                product_eltype = typeof(one(eltype(X)) * one(eltype(S)))
+                S2 = PSDMatrix(zeros(product_eltype, size(S.R)...))
+                X_A_Xt!(S2, A=S, X=X)
+                todense(S2) ≈ todense(X_A_Xt(S, X))
+            end
             @test todense(add_qr(S, S)) ≈ todense(S) + todense(S)
             if (size(M, 1) >= size(M, 2))
                 @test choleskify_factor(S).R ≈ cholesky(todense(S)).U
