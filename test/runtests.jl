@@ -31,8 +31,8 @@ eltypes = (Int64, Float64, BigFloat)
                 @test det(S) ≈ det(todense(S))
                 @test logdet(S) ≈ logdet(todense(S))
             else
-                @test_throws Exception det(S) ≈ det(todense(S))  # TODO: raise better error here?! (#16)
-                @test_throws Exception logdet(S) ≈ det(todense(S))  # TODO: raise better error here?! (#16)
+                @test_throws DimensionMismatch det(S) ≈ det(todense(S))
+                @test_throws DimensionMismatch logdet(S) ≈ det(todense(S))
             end
             if (size(M, 1) >= size(M, 2))
                 @test S \ X ≈ todense(S) \ X

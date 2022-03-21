@@ -21,8 +21,26 @@ copy(M::PSDMatrix) = PSDMatrix(copy(M.R))
 
 # LinearAlgebra overloads
 
-det(M::PSDMatrix) = det(M.R)^2
-logdet(M::PSDMatrix) = 2 * logdet(M.R)
+function det(M::PSDMatrix)
+    if size(M.R, 1) != size(M.R, 2)
+        msg = _errormsg_non_square_factor(M)
+        throw(DimensionMismatch(msg))
+    end
+    return det(M.R)^2
+end
+
+function logdet(M::PSDMatrix)
+    if size(M.R, 1) != size(M.R, 2)
+        msg = _errormsg_non_square_factor(M)
+        throw(DimensionMismatch(msg))
+    end
+    return 2 * logdet(M.R)
+end
+
+_errormsg_non_square_factor(M::PSDMatrix) = (
+    "The requested operation is not available for a non-square PSDMatrix whose factor has dimensions ($(size(M.R,1)), $(size(M.R,2))). " *
+    "Try turning the PSDMatrix into a dense matrix first."
+)
 
 function nonnegative_diagonal(R)
     signs = signbit.(diag(R))
