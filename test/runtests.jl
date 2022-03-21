@@ -63,15 +63,18 @@ eltypes = (Int64, Float64, BigFloat)
             end
             @test Matrix(add_qr(S, S)) ≈ Matrix(S) + Matrix(S)
             if (size(M, 1) >= size(M, 2))
+                @test Matrix(add_cholesky(S, S)) ≈ Matrix(S) + Matrix(S)
+
                 tri = triangularize_factor(S)
                 chol = cholesky(Matrix(S))
+                # Assert that `tri` is basically a Cholesky factorisation, 
+                # but without guaranteed positive diagonal elements
                 @test begin
-                    tri.R' * tri.R ≈ chol.U' * chol.U
                     tri.R isa UpperTriangular
+                    tri.R' * tri.R ≈ chol.U' * chol.U
                 end
                 @test choleskify(tri).U ≈ chol.U
-                @test_throws MethodError choleskify(S)
-                @test Matrix(add_cholesky(S, S)) ≈ Matrix(S) + Matrix(S)
+                @test_throws MethodError choleskify(S)  # non-triangular factors
             end
         end
     end
