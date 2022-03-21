@@ -11,9 +11,7 @@ struct PSDMatrix{T,FactorType} <: AbstractMatrix{T}
 end
 
 # Base overloads
-function Matrix(M::PSDMatrix)
-    return M.R' * M.R
-end
+Matrix(M::PSDMatrix) = M.R' * M.R
 size(M::PSDMatrix) = (size(M.R, 2), size(M.R, 2))
 inv(M::PSDMatrix) = PSDMatrix(inv(M.R'))
 \(A::PSDMatrix, B::AbstractVecOrMat) = A.R \ (A.R' \ B)
