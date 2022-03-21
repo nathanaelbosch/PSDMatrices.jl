@@ -35,7 +35,7 @@ end
 function det(M::PSDMatrix)
     if size(M.R, 1) != size(M.R, 2)
         msg = errormsg_non_square_factor(M)
-        throw(DimensionMismatch(msg))
+        throw(MethodError(msg))
     end
     return det(M.R)^2
 end
@@ -43,7 +43,7 @@ end
 function logdet(M::PSDMatrix)
     if size(M.R, 1) != size(M.R, 2)
         msg = errormsg_non_square_factor(M)
-        throw(DimensionMismatch(msg))
+        throw(MethodError(msg))
     end
     return 2 * logdet(M.R)
 end

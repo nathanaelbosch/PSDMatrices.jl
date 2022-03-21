@@ -36,8 +36,8 @@ eltypes = (Int64, Float64, BigFloat)
                 @test det(S) ≈ det(Matrix(S))
                 @test logdet(S) ≈ logdet(Matrix(S))
             else
-                @test_throws DimensionMismatch det(S) ≈ det(todense(S))
-                @test_throws DimensionMismatch logdet(S) ≈ det(todense(S))
+                @test_throws MethodError det(S) ≈ det(todense(S))
+                @test_throws MethodError logdet(S) ≈ det(todense(S))
             end
             if (size(M, 1) >= size(M, 2))
                 @test S \ X ≈ Matrix(S) \ X
