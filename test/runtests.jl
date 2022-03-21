@@ -62,7 +62,14 @@ eltypes = (Int64, Float64, BigFloat)
             end
             @test Matrix(add_qr(S, S)) ≈ Matrix(S) + Matrix(S)
             if (size(M, 1) >= size(M, 2))
-                @test choleskify_factor(S).R ≈ cholesky(Matrix(S)).U
+                tri = triangularize_factor(S)
+                chol = cholesky(Matrix(S))
+                @test begin
+                    tri.R' * tri.R ≈ chol.U' * chol.U
+                    tri.R isa UpperTriangular
+                end
+                @test choleskify(tri).U ≈ chol.U
+                @test_throws MethodError choleskify(S)
                 @test Matrix(add_cholesky(S, S)) ≈ Matrix(S) + Matrix(S)
             end
         end
