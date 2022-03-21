@@ -32,8 +32,26 @@ end
 
 # LinearAlgebra overloads
 
-det(M::PSDMatrix) = det(M.R)^2
-logdet(M::PSDMatrix) = 2 * logdet(M.R)
+function det(M::PSDMatrix)
+    confirm_factor_is_square(M)
+    return det(M.R)^2
+end
+
+function logdet(M::PSDMatrix)
+    confirm_factor_is_square(M)
+    return 2 * logdet(M.R)
+end
+
+function confirm_factor_is_square(M::PSDMatrix)
+    if size(M.R, 1) != size(M.R, 2)
+        msg = (
+            "The requested operation is not available for a PSDMatrix with a non-square factor." *
+            "The factor of the received PSDMatrix has dimensions ($(size(M.R,1)), $(size(M.R,2))). " *
+            "Try turning the PSDMatrix into a dense matrix first."
+        )
+        throw(MethodError(msg))
+    end
+end
 
 function nonnegative_diagonal(R)
     signs = signbit.(diag(R))
