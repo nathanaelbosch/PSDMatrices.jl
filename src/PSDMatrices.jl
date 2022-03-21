@@ -1,7 +1,7 @@
 
 module PSDMatrices
 
-import Base: \, /, size, inv, copy, ==, show
+import Base: \, /, size, inv, copy, ==, show, Matrix
 using LinearAlgebra
 import LinearAlgebra: det, logdet
 
@@ -11,7 +11,9 @@ struct PSDMatrix{T,FactorType} <: AbstractMatrix{T}
 end
 
 # Base overloads
-
+function Matrix(M::PSDMatrix)
+    return M.R' * M.R
+end
 size(M::PSDMatrix) = (size(M.R, 2), size(M.R, 2))
 inv(M::PSDMatrix) = PSDMatrix(inv(M.R'))
 \(A::PSDMatrix, B::AbstractVecOrMat) = A.R \ (A.R' \ B)
@@ -41,10 +43,6 @@ end
 
 # Custom functions
 
-function todense(M::PSDMatrix)
-    return M.R' * M.R
-end
-
 function X_A_Xt(; A::PSDMatrix, X::AbstractMatrix)
     return PSDMatrix(A.R * X')
 end
@@ -56,7 +54,7 @@ end
 X_A_Xt!(out::PSDMatrix, A::PSDMatrix, X::AbstractMatrix) = X_A_Xt!(out, A=A, X=X)
 
 function add_cholesky(A::PSDMatrix, B::PSDMatrix)
-    sum_dense = todense(A) + todense(B)
+    sum_dense = Matrix(A) + Matrix(B)
     factor = cholesky(sum_dense).U
     return PSDMatrix(factor)
 end
@@ -74,7 +72,6 @@ function choleskify_factor(M::PSDMatrix)
 end
 
 export PSDMatrix
-export todense
 export add_cholesky
 export add_qr
 export choleskify_factor
