@@ -1,6 +1,7 @@
 using Test
 using PSDMatrices
 using LinearAlgebra
+using Suppressor
 
 M_square = [1 1; 2 20]
 M_tall = [1 1; 2 20; 3 30]
@@ -24,8 +25,8 @@ eltypes = (Int64, Float64, BigFloat)
             if size(M, 1) == size(M, 2)
                 @test todense(inv(S)) ≈ inv(todense(S))
             end
-            @test show(S) == nothing
-            @test show(stdout, MIME("text/plain"), S) == nothing
+            @suppress_out @test show(S) == nothing
+            @suppress_out @test show(stdout, MIME("text/plain"), S) == nothing
         end
 
         @testset "LinearAlgebra" begin
