@@ -47,7 +47,8 @@ function logdet(M::PSDMatrix)
 end
 
 _errormsg_non_square_factor(M::PSDMatrix) = (
-    "The requested operation is not available for a non-square PSDMatrix whose factor has dimensions ($(size(M.R,1)), $(size(M.R,2))). " *
+    "The requested operation is not available for a PSDMatrix with a non-square factor." *
+    "The factor of the received PSDMatrix has dimensions ($(size(M.R,1)), $(size(M.R,2))). " *
     "Try turning the PSDMatrix into a dense matrix first."
 )
 
