@@ -82,7 +82,7 @@ end
 
 function choleskify(M::PSDMatrix)
     if M.R isa UpperTriangular
-        return Cholesky(nonnegative_diagonal(M.R))
+        return Cholesky(nonnegative_diagonal(M.R), 'U', 0)
     end
     errormsg = "choleskify() is only defined for PSDMatrix types with upper triangular factors."
     throw(MethodError(errormsg))
