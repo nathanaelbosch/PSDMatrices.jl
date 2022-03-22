@@ -53,12 +53,6 @@ function confirm_factor_is_square(M::PSDMatrix)
     end
 end
 
-function nonnegative_diagonal(R)
-    signs = signbit.(diag(R))
-    R .*= (1 .- 2 .* signs)
-    return R
-end
-
 # Custom functions
 
 X_A_Xt(; A::PSDMatrix, X::AbstractMatrix) = PSDMatrix(A.R * X')
@@ -78,19 +72,18 @@ end
 function add_qr(A::PSDMatrix, B::PSDMatrix)
     stack = vcat(A.R, B.R)
     matrix = PSDMatrix(stack)
-    return choleskify_factor(matrix)
+    return triangularize_factor(matrix)
 end
 
-function choleskify_factor(M::PSDMatrix)
+function triangularize_factor(M::PSDMatrix)
     R = qr(M.R).R
-    R = nonnegative_diagonal(R)
     return PSDMatrix(UpperTriangular(R))
 end
 
 export PSDMatrix
 export add_cholesky
 export add_qr
-export choleskify_factor
+export triangularize_factor
 export X_A_Xt
 export X_A_Xt!
 
