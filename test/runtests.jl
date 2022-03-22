@@ -32,6 +32,7 @@ eltypes = (Int64, Float64, BigFloat)
         end
 
         @testset "LinearAlgebra" begin
+            @test diag(S) ≈ diag(Matrix(S))
             if size(M, 1) == size(M, 2)
                 @test det(S) ≈ det(Matrix(S))
                 @test logdet(S) ≈ logdet(Matrix(S))
