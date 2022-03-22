@@ -80,12 +80,6 @@ function triangularize_factor(M::PSDMatrix)
     return PSDMatrix(UpperTriangular(R))
 end
 
-function nonnegative_diagonal(R)
-    signs = signbit.(diag(R))
-    R .*= (1 .- 2 .* signs)
-    return R
-end
-
 export PSDMatrix
 export add_cholesky
 export add_qr
