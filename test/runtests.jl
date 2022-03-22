@@ -66,6 +66,7 @@ eltypes = (Int64, Float64, BigFloat)
                 @test Matrix(add_cholesky(S, S)) ≈ Matrix(S) + Matrix(S)
                 tri = triangularize_factor(S)
                 @test tri.R isa UpperTriangular
+                @test Matrix(tri) ≈ Matrix(S)
             end
         end
     end
