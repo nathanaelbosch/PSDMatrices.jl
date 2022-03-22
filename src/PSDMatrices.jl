@@ -80,14 +80,6 @@ function triangularize_factor(M::PSDMatrix)
     return PSDMatrix(UpperTriangular(R))
 end
 
-function choleskify(M::PSDMatrix)
-    if M.R isa UpperTriangular
-        return Cholesky(nonnegative_diagonal(M.R), 'U', 0)
-    end
-    errormsg = "choleskify() is only defined for PSDMatrix types with upper triangular factors."
-    throw(MethodError(errormsg))
-end
-
 function nonnegative_diagonal(R)
     signs = signbit.(diag(R))
     R .*= (1 .- 2 .* signs)
@@ -98,7 +90,6 @@ export PSDMatrix
 export add_cholesky
 export add_qr
 export triangularize_factor
-export choleskify
 export X_A_Xt
 export X_A_Xt!
 
