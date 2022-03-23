@@ -42,7 +42,11 @@ function logdet(M::PSDMatrix)
     return 2 * logdet(M.R)
 end
 
-diag(M::PSDMatrix) = sum(abs2, M.R, dims=1)
+function diag(M::PSDMatrix)
+    out = similar(M.R, size(M.R, 2))
+    sum!(abs2, out', M.R)
+    return out
+end
 
 function confirm_factor_is_square(M::PSDMatrix)
     if size(M.R, 1) != size(M.R, 2)
