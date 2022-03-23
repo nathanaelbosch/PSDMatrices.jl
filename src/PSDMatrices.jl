@@ -3,7 +3,7 @@ module PSDMatrices
 
 import Base: \, /, size, inv, copy, copy!, ==, show, similar, Matrix
 using LinearAlgebra
-import LinearAlgebra: det, logdet
+import LinearAlgebra: det, logdet, diag
 
 struct PSDMatrix{T,FactorType} <: AbstractMatrix{T}
     R::FactorType
@@ -40,6 +40,12 @@ end
 function logdet(M::PSDMatrix)
     confirm_factor_is_square(M)
     return 2 * logdet(M.R)
+end
+
+function diag(M::PSDMatrix)
+    out = similar(M.R, size(M.R, 2))
+    sum!(abs2, out', M.R)
+    return out
 end
 
 function confirm_factor_is_square(M::PSDMatrix)
