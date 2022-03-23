@@ -42,14 +42,7 @@ function logdet(M::PSDMatrix)
     return 2 * logdet(M.R)
 end
 
-function diag(M::PSDMatrix)
-    out = similar(M.R, size(M.R, 2))
-    @simd ivdep for i in axes(M.R, 2)
-        col = view(M.R, :, i)
-        out[i] = sum(abs2, col)
-    end
-    return out
-end
+diag(M::PSDMatrix) = sum(abs2, M.R, dims=1)
 
 function confirm_factor_is_square(M::PSDMatrix)
     if size(M.R, 1) != size(M.R, 2)
