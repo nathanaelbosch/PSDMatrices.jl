@@ -72,7 +72,7 @@ X_A_Xt!(out::PSDMatrix, A::PSDMatrix, X::AbstractMatrix) = X_A_Xt!(out, A=A, X=X
 function add_cholesky(A::PSDMatrix, B::PSDMatrix)
     sum_dense = Matrix(A) + Matrix(B)
     factor = cholesky(sum_dense).U
-    return PSDMatrix(factor)
+    return PSDMatrix(UpperTriangular(factor))
 end
 
 function add_qr(A::PSDMatrix, B::PSDMatrix)
