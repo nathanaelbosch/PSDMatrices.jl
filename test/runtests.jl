@@ -6,11 +6,12 @@ using Suppressor
 M_square = [1 1; 2 20]
 M_tall = [1 1; 2 20; 3 30]
 M_wide = [1 1 1; 2 20 200]
+M_neg = -ones(1,1)
 eltypes = (Int64, Float64, BigFloat)
 
 @testset "PSDMatrices.jl" begin
     @testset "eltype=$t | shape=$(size(Mbase))" for t in eltypes,
-        Mbase in (M_square, M_tall, M_wide)
+        Mbase in (M_square, M_tall, M_wide, M_neg)
 
         M = t.(Mbase)
         S = PSDMatrix(M)
