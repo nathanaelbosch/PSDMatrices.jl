@@ -6,7 +6,7 @@ using Suppressor
 M_square = [1 1; 2 20]
 M_tall = [1 1; 2 20; 3 30]
 M_wide = [1 1 1; 2 20 200]
-M_neg = -ones(1,1)
+M_neg = -ones(1, 1)
 eltypes = (Int64, Float64, BigFloat)
 
 @testset "PSDMatrices.jl" begin
