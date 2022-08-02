@@ -47,7 +47,7 @@ eltypes = (Int64, Float64, BigFloat)
                 @test X / S ≈ X / Matrix(S)
 
                 v = rand(t, size(S, 2))
-                @test v' / S ≈ v' / Matrix(S)
+                @test transpose(v) / S ≈ transpose(v) / Matrix(S)
                 @test adjoint(v) / S ≈ adjoint(v) / Matrix(S)
             end
         end
