@@ -16,7 +16,7 @@ eltypes = (Int64, Float64, BigFloat)
 
         M = t.(Mbase)
         S = PSDMatrix(M)
-        X = rand(size(S, 1), size(S, 2))
+        X = rand(t, size(S, 1), size(S, 2))
 
         @testset "Base" begin
             @test eltype(S) == t
