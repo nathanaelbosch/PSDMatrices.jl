@@ -2,6 +2,7 @@ using Test
 using PSDMatrices
 using LinearAlgebra
 using Suppressor
+using Aqua
 
 M_square = [1 1; 2 20]
 M_tall = [1 1; 2 20; 3 30]
@@ -71,6 +72,9 @@ eltypes = (Int64, Float64, BigFloat)
                 @test Matrix(tri) ≈ Matrix(S)
             end
         end
+    end
+    @testset "Aqua" begin
+        Aqua.test_all(PSDMatrices)
     end
 end
 nothing
