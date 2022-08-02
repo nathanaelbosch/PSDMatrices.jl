@@ -45,6 +45,10 @@ eltypes = (Int64, Float64, BigFloat)
             if (size(M, 1) >= size(M, 2))
                 @test S \ X ≈ Matrix(S) \ X
                 @test X / S ≈ X / Matrix(S)
+
+                v = rand(t, size(S, 2))
+                @test v' / S ≈ v' / Matrix(S)
+                @test adjoint(v) / S ≈ adjoint(v) / Matrix(S)
             end
         end
 
