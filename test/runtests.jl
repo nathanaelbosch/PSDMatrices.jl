@@ -31,6 +31,7 @@ eltypes = (Int64, Float64, BigFloat)
             end
             @suppress_out @test isnothing(show(S))
             @suppress_out @test isnothing(show(stdout, MIME("text/plain"), S))
+            @test iszero(S) == iszero(S.R)
         end
 
         @testset "LinearAlgebra" begin

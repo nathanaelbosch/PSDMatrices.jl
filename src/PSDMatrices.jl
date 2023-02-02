@@ -1,7 +1,7 @@
 
 module PSDMatrices
 
-import Base: \, /, size, inv, copy, copy!, ==, show, similar, Matrix
+import Base: \, /, size, inv, copy, copy!, ==, show, similar, Matrix, iszero
 using LinearAlgebra
 import LinearAlgebra: det, logabsdet, diag
 
@@ -14,6 +14,7 @@ end
 Matrix(M::PSDMatrix) = M.R' * M.R
 size(M::PSDMatrix) = (size(M.R, 2), size(M.R, 2))
 inv(M::PSDMatrix) = PSDMatrix(inv(M.R'))
+iszero(M::PSDMatrix) = iszero(M.R)
 \(A::PSDMatrix, B::AbstractVecOrMat) = A.R \ (A.R' \ B)
 /(B::AbstractVecOrMat, A::PSDMatrix) = B / A.R / A.R'
 /(v::LinearAlgebra.Transpose{T,<:AbstractVector} where {T}, M::PSDMatrices.PSDMatrix) =
