@@ -7,8 +7,9 @@ import LinearAlgebra: det, logabsdet, diag
 
 struct PSDMatrix{T,FactorType} <: AbstractMatrix{T}
     R::FactorType
-    PSDMatrix(R::AbstractMatrix{T}) where {T} = new{T,typeof(R)}(R)
 end
+PSDMatrix(R::AbstractMatrix{T}) where {T} = PSDMatrix{T,typeof(R)}(R)
+PSDMatrix{T}(R::AbstractMatrix) where {T} = PSDMatrix{T,typeof(R)}(R)
 
 # Base overloads
 Matrix(M::PSDMatrix) = M.R' * M.R
@@ -21,8 +22,9 @@ iszero(M::PSDMatrix) = iszero(M.R)
     transpose(M \ transpose(v))
 /(v::LinearAlgebra.Adjoint{T,<:AbstractVector} where {T}, M::PSDMatrices.PSDMatrix) =
     adjoint(conj(M) \ adjoint(v))
-copy(M::PSDMatrix) = PSDMatrix(copy(M.R))
-similar(M::PSDMatrix, element_type::Type=eltype(M)) = PSDMatrix(similar(M.R, element_type))
+copy(M::PSDMatrix{T}) where {T} = PSDMatrix{T}(copy(M.R))
+similar(M::PSDMatrix{T}, element_type::Type=eltype(M)) where {T} =
+    PSDMatrix{T}(similar(M.R, element_type))
 copy!(dst::PSDMatrix, src::PSDMatrix) = (copy!(dst.R, src.R); dst)
 ==(M1::PSDMatrix, M2::PSDMatrix) = M1.R == M2.R  # todo: same as isequal()?!
 function show(io::IO, M::PSDMatrix)
