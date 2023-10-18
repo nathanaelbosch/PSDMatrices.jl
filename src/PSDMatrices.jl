@@ -12,7 +12,7 @@ PSDMatrix(R::AbstractMatrix{T}) where {T} = PSDMatrix{T,typeof(R)}(R)
 PSDMatrix{T}(R::AbstractMatrix) where {T} = PSDMatrix{T,typeof(R)}(R)
 
 # Base overloads
-Matrix(M::PSDMatrix) = M.R' * M.R
+Matrix(M::PSDMatrix) = Matrix(M.R' * M.R)
 size(M::PSDMatrix) = (size(M.R, 2), size(M.R, 2))
 inv(M::PSDMatrix) = PSDMatrix(inv(M.R'))
 iszero(M::PSDMatrix) = iszero(M.R)
