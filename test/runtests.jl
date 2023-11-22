@@ -22,6 +22,7 @@ eltypes = (Int64, Float64, BigFloat)
             @test eltype(S) == t
             @test size(S) == size(Matrix(S))
             @test S == S
+            @test S ≈ S
             @test copy(S) == S
             @test !(copy(S) === S)
             @test typeof(similar(S)) == typeof(S)

@@ -1,7 +1,7 @@
 
 module PSDMatrices
 
-import Base: \, /, size, inv, copy, copy!, ==, show, similar, Matrix, iszero
+import Base: \, /, size, inv, copy, copy!, ==, show, similar, Matrix, iszero, isapprox
 using LinearAlgebra
 import LinearAlgebra: det, logabsdet, diag
 
@@ -28,6 +28,7 @@ similar(M::PSDMatrix{T}, element_type::Type=eltype(M)) where {T} =
     PSDMatrix{T}(similar(M.R, element_type))
 copy!(dst::PSDMatrix, src::PSDMatrix) = (copy!(dst.R, src.R); dst)
 ==(M1::PSDMatrix, M2::PSDMatrix) = M1.R == M2.R  # todo: same as isequal()?!
+isapprox(M1::PSDMatrix, M2::PSDMatrix; kwargs...) = isapprox(M1.R, M2.R; kwargs...)
 function show(io::IO, M::PSDMatrix)
     print(io, "$(size(M,1))x$(size(M,2)) $(typeof(M)); R=")
     show(io, M.R)
