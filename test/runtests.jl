@@ -131,10 +131,10 @@ sizes = (M_square,)
         Aqua.test_all(PSDMatrices)
     end
     @testset "Code linting (JET.jl)" begin
-        # @test JET.test_package(
-        #     PSDMatrices;
-        #     target_defined_modules=true,
-        # )
+        JET.test_package(
+            PSDMatrices;
+            target_defined_modules=true,
+        )
     end
 end
 nothing
