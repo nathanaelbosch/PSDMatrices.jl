@@ -1,11 +1,16 @@
 
 module PSDMatrices
 
-import Base: \, /, size, inv, copy, copy!, ==, show, similar, Matrix, iszero, isapprox
+import Base:
+    \, /, size, inv, copy, copy!, ==, show, similar, Matrix, iszero, isapprox, ndims
 using LinearAlgebra
 import LinearAlgebra: det, logabsdet, diag
 
-struct PSDMatrix{T,FactorType} <: AbstractMatrix{T}
+using PDMats
+using PDMats
+import PDMats: unwhiten!
+
+struct PSDMatrix{T,FactorType} <: AbstractPDMat{T}
     R::FactorType
 end
 PSDMatrix(R::AbstractMatrix{T}) where {T} = PSDMatrix{T,typeof(R)}(R)
@@ -15,6 +20,7 @@ PSDMatrix{T}(R::AbstractMatrix) where {T} = PSDMatrix{T,typeof(R)}(R)
 Matrix(M::PSDMatrix) = Matrix(M.R' * M.R)
 unfactorize(M::PSDMatrix) = M.R' * M.R
 size(M::PSDMatrix) = (size(M.R, 2), size(M.R, 2))
+ndims(M::PSDMatrix) = 2
 inv(M::PSDMatrix) = PSDMatrix(inv(M.R'))
 iszero(M::PSDMatrix) = iszero(M.R)
 \(A::PSDMatrix, B::AbstractVecOrMat) = A.R \ (A.R' \ B)
@@ -65,14 +71,62 @@ function confirm_factor_is_square(M::PSDMatrix)
             "The factor of the received PSDMatrix has dimensions ($(size(M.R,1)), $(size(M.R,2))). " *
             "Try turning the PSDMatrix into a dense matrix first."
         )
-        throw(MethodError(msg))
+        error(msg)
     end
 end
 
-# Custom functions
+# PDMats.jl overloads
+choleskify(M::PSDMatrix) = Cholesky(nonnegative_diagonal!(qr(M.R).R), 'U', 0)
+function nonnegative_diagonal!(R)
+    signs = signbit.(diag(R))
+    R .*= (1 .- 2 .* signs)
+    return R
+end
+function PDMats.unwhiten!(r::AbstractVecOrMat, M::PSDMatrix, x::AbstractVecOrMat)
+    PDMats.@check_argdims axes(r) == axes(x)
+    PDMats.@check_argdims size(M.R, 2) == size(x, 1)
+    return mul!(r, choleskify(M).L, x)
+end
+function PDMats.unwhiten(M::PSDMatrix, x::AbstractVecOrMat)
+    PDMats.@check_argdims size(M.R, 1) == size(x, 1)
+    return choleskify(M).L * x
+end
+function PDMats.whiten!(r::AbstractVecOrMat, M::PSDMatrix, x::AbstractVecOrMat)
+    PDMats.@check_argdims axes(r) == axes(x)
+    PDMats.@check_argdims size(M.R, 2) == size(x, 1)
+    return ldiv!(r, choleskify(M).L, x)
+end
+function PDMats.whiten(M::PSDMatrix, x::AbstractVecOrMat)
+    PDMats.@check_argdims size(M.R, 1) == size(x, 1)
+    return choleskify(M).L \ x
+end
 
-X_A_Xt(; A::PSDMatrix, X::AbstractMatrix) = PSDMatrix(A.R * X')
-X_A_Xt(A::PSDMatrix, X::AbstractMatrix) = X_A_Xt(A=A, X=X)
+PDMats.X_A_Xt(A::PSDMatrix, X::AbstractVecOrMat) = PSDMatrix(A.R * X')
+PDMats.Xt_A_X(A::PSDMatrix, X::AbstractVecOrMat) = PSDMatrix(A.R * X)
+PDMats.X_invA_Xt(A::PSDMatrix, X::AbstractVecOrMat) = PSDMatrix(A.R' \ X')
+PDMats.Xt_invA_X(A::PSDMatrix, X::AbstractVecOrMat) = PSDMatrix(A.R' \ X)
+PDMats.quad(A::PSDMatrix, x::AbstractVector) = (z = A.R * x; z'z)
+PDMats.quad(A::PSDMatrix, X::AbstractMatrix) = diag(PSDMatrix(A.R * X))
+PDMats.quad!(out::AbstractArray, A::PSDMatrix, X::AbstractMatrix) = begin
+    z = similar(X, size(X, 2))
+    for i = 1:size(X, 2)
+        mul!(z, A.R, @view X[:, i])
+        out[i] = sum(abs2, z)
+    end
+    return out
+end
+PDMats.invquad(A::PSDMatrix, x::AbstractVector) = (z = A.R' \ x; z'z)
+PDMats.invquad(A::PSDMatrix, X::AbstractMatrix) = diag(PSDMatrix(A.R' \ X))
+PDMats.invquad!(out::AbstractArray, A::PSDMatrix, X::AbstractMatrix) = begin
+    z = similar(X, size(X, 2))
+    L = choleskify(A).L
+    for i = 1:size(X, 2)
+        ldiv!(z, L, @view X[:, i])
+        out[i] = sum(abs2, z)
+    end
+    return out
+end
+
 function X_A_Xt!(out::PSDMatrix; A::PSDMatrix, X::AbstractMatrix)
     mul!(out.R, A.R, X')
     return out
