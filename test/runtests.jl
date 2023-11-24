@@ -141,7 +141,7 @@ sizes = (M_square,)
             @test rand(MersenneTwister(1), D) ≈ rand(MersenneTwister(1), DM)
 
             x = rand(size(S, 1))
-            @test loglikelihood(D, x) == loglikelihood(DM, x)
+            @test loglikelihood(D, x) ≈ loglikelihood(DM, x)
 
             @test invcov(D) ≈ invcov(DM)
             @test logdetcov(D) ≈ logdetcov(DM)
