@@ -1,7 +1,8 @@
 
 module PSDMatrices
 
-import Base: \, /, size, inv, copy, copy!, ==, show, similar, Matrix, iszero, isapprox
+import Base:
+    \, /, size, inv, copy, copy!, ==, show, similar, Matrix, iszero, isapprox, ndims
 using LinearAlgebra
 import LinearAlgebra: det, logabsdet, diag
 
