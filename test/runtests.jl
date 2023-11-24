@@ -10,13 +10,12 @@ M_tall = [1 1; 2 20; 3 30]
 M_wide = [1 1 1; 2 20 200]
 M_neg = -ones(1, 1)
 # eltypes = (Int64, Float64, BigFloat)
-eltypes = (Float64, )
+eltypes = (Float64,)
 # sizes = (M_square, M_tall, M_wide, M_neg)
 sizes = (M_square,)
 
 @testset "PSDMatrices.jl" begin
     @testset "eltype=$t | shape=$(size(Mbase))" for t in eltypes, Mbase in sizes
-
         M = t.(Mbase)
         S = PSDMatrix(M)
         SM = M'M
@@ -83,51 +82,51 @@ sizes = (M_square,)
         end
 
         if size(S.R, 1) == size(S.R, 2)
-        @testset "PDMats.jl interface" begin
-            i = 1
-            x = rand(t, size(S, 2), size(S, 2))
-            v = rand(t, size(S, 2))
-            r = similar(x)
-            c = rand(t)
-            @test size(S) == size(SM)
-            @test size(S, i) == size(SM, i)
-            @test ndims(S) == ndims(SM)
-            @test_nowarn eltype(S)
-            @test_nowarn Matrix(S)
-            @test diag(S) ≈ diag(SM)
-            @test Matrix(inv(S)) ≈ inv(SM)
-            @test_broken eigmax(S)
-            @test_broken eigmin(S)
-            @test logdet(S) ≈ logdet(SM)
-            @test_broken S * x
-            @test S \ x ≈ SM \ x
-            @test_broken S * c
-            @test_broken c * S
-            @test_broken S + b
-            # @test_nowarn pdadd(S, b, c)
-            # @test_nowarn pdadd(m, S)
-            # @test_nowarn pdadd(m, S, c)
-            # @test_nowarn pdadd!(m, S)
-            # @test_nowarn pdadd!(m, S, c)
-            # @test_nowarn pdadd!(r, m, S)
-            # @test_nowarn pdadd!(r, m, S, c)
-            @test quad(S, v) ≈ quad(SM, v)
-            @test quad(S, x) ≈ quad(SM, x)
-            @test quad!(zeros(size(X, 2)), S, x) ≈ quad(SM, x)
-            @test invquad(S, v) ≈ invquad(SM, v)
-            @test invquad(S, x) ≈ invquad(SM, x)
-            @test invquad!(zeros(size(X, 2)), S, x) ≈ invquad(SM, x)
-            @test Matrix(X_A_Xt(S, x')) ≈ x' * SM * x
-            @test Matrix(Xt_A_X(S, x)) ≈ x' * SM * x
-            @test Matrix(X_invA_Xt(S, x')) ≈ x' * inv(SM) * x
-            @test Matrix(Xt_invA_X(S, x)) ≈ x' * inv(SM) * x
-            @test whiten(S, x) ≈ whiten(SM, x)
-            @test whiten!(S, copy(x)) ≈ whiten(SM, x)
-            @test whiten!(r, S, x) ≈ whiten(SM, x)
-            @test unwhiten(S, x) ≈ unwhiten(SM, x)
-            @test unwhiten!(S, copy(x)) ≈ unwhiten(SM, x)
-            @test unwhiten!(r, S, x) ≈ unwhiten(SM, x)
-        end
+            @testset "PDMats.jl interface" begin
+                i = 1
+                x = rand(t, size(S, 2), size(S, 2))
+                v = rand(t, size(S, 2))
+                r = similar(x)
+                c = rand(t)
+                @test size(S) == size(SM)
+                @test size(S, i) == size(SM, i)
+                @test ndims(S) == ndims(SM)
+                @test_nowarn eltype(S)
+                @test_nowarn Matrix(S)
+                @test diag(S) ≈ diag(SM)
+                @test Matrix(inv(S)) ≈ inv(SM)
+                @test_broken eigmax(S)
+                @test_broken eigmin(S)
+                @test logdet(S) ≈ logdet(SM)
+                @test_broken S * x
+                @test S \ x ≈ SM \ x
+                @test_broken S * c
+                @test_broken c * S
+                @test_broken S + b
+                # @test_nowarn pdadd(S, b, c)
+                # @test_nowarn pdadd(m, S)
+                # @test_nowarn pdadd(m, S, c)
+                # @test_nowarn pdadd!(m, S)
+                # @test_nowarn pdadd!(m, S, c)
+                # @test_nowarn pdadd!(r, m, S)
+                # @test_nowarn pdadd!(r, m, S, c)
+                @test quad(S, v) ≈ quad(SM, v)
+                @test quad(S, x) ≈ quad(SM, x)
+                @test quad!(zeros(size(X, 2)), S, x) ≈ quad(SM, x)
+                @test invquad(S, v) ≈ invquad(SM, v)
+                @test invquad(S, x) ≈ invquad(SM, x)
+                @test invquad!(zeros(size(X, 2)), S, x) ≈ invquad(SM, x)
+                @test Matrix(X_A_Xt(S, x')) ≈ x' * SM * x
+                @test Matrix(Xt_A_X(S, x)) ≈ x' * SM * x
+                @test Matrix(X_invA_Xt(S, x')) ≈ x' * inv(SM) * x
+                @test Matrix(Xt_invA_X(S, x)) ≈ x' * inv(SM) * x
+                @test whiten(S, x) ≈ whiten(SM, x)
+                @test whiten!(S, copy(x)) ≈ whiten(SM, x)
+                @test whiten!(r, S, x) ≈ whiten(SM, x)
+                @test unwhiten(S, x) ≈ unwhiten(SM, x)
+                @test unwhiten!(S, copy(x)) ≈ unwhiten(SM, x)
+                @test unwhiten!(r, S, x) ≈ unwhiten(SM, x)
+            end
         end
 
         @testset "Distributions.jl compatibility" begin
@@ -155,11 +154,10 @@ sizes = (M_square,)
     @testset "Code quality (Aqua.jl)" begin
         Aqua.test_all(PSDMatrices)
     end
-    @testset "Code linting (JET.jl)" begin
-        JET.test_package(
-            PSDMatrices;
-            target_defined_modules=true,
-        )
+    if VERSION >= v"1.9"
+        @testset "Code linting (JET.jl)" begin
+            JET.test_package(PSDMatrices; target_defined_modules=true)
+        end
     end
 end
 nothing

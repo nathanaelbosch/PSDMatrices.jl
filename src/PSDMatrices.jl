@@ -108,7 +108,7 @@ PDMats.quad(A::PSDMatrix, x::AbstractVector) = (z = A.R * x; z'z)
 PDMats.quad(A::PSDMatrix, X::AbstractMatrix) = diag(PSDMatrix(A.R * X))
 PDMats.quad!(out::AbstractArray, A::PSDMatrix, X::AbstractMatrix) = begin
     z = similar(X, size(X, 2))
-    for i in 1:size(X, 2)
+    for i = 1:size(X, 2)
         mul!(z, A.R, @view X[:, i])
         out[i] = sum(abs2, z)
     end
@@ -126,13 +126,11 @@ PDMats.invquad!(out::AbstractArray, A::PSDMatrix, X::AbstractMatrix) = begin
     return out
 end
 
-
 function X_A_Xt!(out::PSDMatrix; A::PSDMatrix, X::AbstractMatrix)
     mul!(out.R, A.R, X')
     return out
 end
 X_A_Xt!(out::PSDMatrix, A::PSDMatrix, X::AbstractMatrix) = X_A_Xt!(out, A=A, X=X)
-
 
 function add_cholesky(A::PSDMatrix, B::PSDMatrix)
     sum_dense = Matrix(A) + Matrix(B)
