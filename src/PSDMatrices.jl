@@ -104,6 +104,27 @@ PDMats.X_A_Xt(A::PSDMatrix, X::AbstractVecOrMat) = PSDMatrix(A.R * X')
 PDMats.Xt_A_X(A::PSDMatrix, X::AbstractVecOrMat) = PSDMatrix(A.R * X)
 PDMats.X_invA_Xt(A::PSDMatrix, X::AbstractVecOrMat) = PSDMatrix(A.R' \ X')
 PDMats.Xt_invA_X(A::PSDMatrix, X::AbstractVecOrMat) = PSDMatrix(A.R' \ X)
+PDMats.quad(A::PSDMatrix, x::AbstractVector) = (z = A.R * x; z'z)
+PDMats.quad(A::PSDMatrix, X::AbstractMatrix) = diag(PSDMatrix(A.R * X))
+PDMats.quad!(out::AbstractArray, A::PSDMatrix, X::AbstractMatrix) = begin
+    z = similar(X, size(X, 2))
+    for i in 1:size(X, 2)
+        mul!(z, A.R, @view X[:, i])
+        out[i] = sum(abs2, z)
+    end
+    return out
+end
+PDMats.invquad(A::PSDMatrix, x::AbstractVector) = (z = A.R' \ x; z'z)
+PDMats.invquad(A::PSDMatrix, X::AbstractMatrix) = diag(PSDMatrix(A.R' \ X))
+PDMats.invquad!(out::AbstractArray, A::PSDMatrix, X::AbstractMatrix) = begin
+    z = similar(X, size(X, 2))
+    L = choleskify(A).L
+    for i = 1:size(X, 2)
+        ldiv!(z, L, @view X[:, i])
+        out[i] = sum(abs2, z)
+    end
+    return out
+end
 
 
 function X_A_Xt!(out::PSDMatrix; A::PSDMatrix, X::AbstractMatrix)

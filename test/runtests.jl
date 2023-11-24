@@ -1,9 +1,9 @@
 using Test
 using PSDMatrices
-using LinearAlgebra
+using LinearAlgebra, Statistics, Random
 using Suppressor
 using Aqua, JET
-using PDMats
+using PDMats, Distributions
 
 M_square = [1 1; 2 20]
 M_tall = [1 1; 2 20; 3 30]
@@ -86,6 +86,7 @@ sizes = (M_square,)
         @testset "PDMats.jl interface" begin
             i = 1
             x = rand(t, size(S, 2), size(S, 2))
+            v = rand(t, size(S, 2))
             r = similar(x)
             c = rand(t)
             @test size(S) == size(SM)
@@ -110,10 +111,12 @@ sizes = (M_square,)
             # @test_nowarn pdadd!(m, S, c)
             # @test_nowarn pdadd!(r, m, S)
             # @test_nowarn pdadd!(r, m, S, c)
-            # @test_nowarn quad(S, x)
-            # @test_nowarn quad!(copy(S), S, x)
-            # @test_nowarn invquad(S, x)
-            # @test_nowarn invquad!(r, S, x)
+            @test quad(S, v) == quad(SM, v)
+            @test quad(S, x) ≈ quad(SM, x)
+            @test quad!(zeros(size(X, 2)), S, x) ≈ quad(SM, x)
+            @test invquad(S, v) ≈ invquad(SM, v)
+            @test invquad(S, x) ≈ invquad(SM, x)
+            @test invquad!(zeros(size(X, 2)), S, x) ≈ invquad(SM, x)
             @test Matrix(X_A_Xt(S, x')) ≈ x' * SM * x
             @test Matrix(Xt_A_X(S, x)) ≈ x' * SM * x
             @test Matrix(X_invA_Xt(S, x')) ≈ x' * inv(SM) * x
@@ -125,6 +128,28 @@ sizes = (M_square,)
             @test unwhiten!(S, copy(x)) ≈ unwhiten(SM, x)
             @test unwhiten!(r, S, x) ≈ unwhiten(SM, x)
         end
+        end
+
+        @testset "Distributions.jl compatibility" begin
+            μ = zeros(size(S, 1))
+            D = @test_nowarn MvNormal(μ, S)
+            DM = MvNormal(μ, SM)
+
+            @test Distributions._cov(D) == S
+            @test cov(D) == SM
+            @test cor(D) == cor(DM)
+            @test_nowarn rand(D)
+            @test rand(Xoshiro(1), D) ≈ rand(Xoshiro(1), DM)
+
+            x = rand(size(S, 1))
+            @test loglikelihood(D, x) == loglikelihood(DM, x)
+
+            @test invcov(D) ≈ invcov(DM)
+            @test logdetcov(D) ≈ logdetcov(DM)
+            @test sqmahal(D, x) ≈ sqmahal(DM, x)
+
+            @test pdf(D, x) ≈ pdf(DM, x)
+            @test pdf(D, x) ≈ exp(logpdf(D, x))
         end
     end
     @testset "Code quality (Aqua.jl)" begin
