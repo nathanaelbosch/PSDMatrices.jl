@@ -139,7 +139,7 @@ sizes = (M_square,)
             @test cov(D) == SM
             @test cor(D) == cor(DM)
             @test_nowarn rand(D)
-            @test rand(Xoshiro(1), D) ≈ rand(Xoshiro(1), DM)
+            @test rand(MersenneTwister(1), D) ≈ rand(MersenneTwister(1), DM)
 
             x = rand(size(S, 1))
             @test loglikelihood(D, x) == loglikelihood(DM, x)
