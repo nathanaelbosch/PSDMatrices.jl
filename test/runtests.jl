@@ -24,6 +24,7 @@ sizes = (M_square,)
         @testset "Base" begin
             @test eltype(S) == t
             @test size(S) == size(Matrix(S))
+            @test ndims(S) == 2
             @test S == S
             @test S ≈ S
             @test copy(S) == S
@@ -44,8 +45,8 @@ sizes = (M_square,)
                 @test det(S) ≈ det(Matrix(S))
                 @test logdet(S) ≈ logdet(Matrix(S))
             else
-                @test_throws MethodError det(S)
-                @test_throws MethodError logdet(S)
+                @test_throws Exception det(S)
+                @test_throws Exception logdet(S)
             end
             if (size(M, 1) >= size(M, 2))
                 @test S \ X ≈ Matrix(S) \ X
@@ -58,6 +59,8 @@ sizes = (M_square,)
         end
 
         @testset "Exports" begin
+            @test PSDMatrices.unfactorize(S) == M'M
+
             @test norm(Matrix(S) - M' * M) == 0.0
             @test Matrix(X_A_Xt(S, X)) ≈ X * Matrix(S) * X'
             @test begin

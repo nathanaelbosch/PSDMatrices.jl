@@ -153,7 +153,7 @@ export PSDMatrix
 export add_cholesky
 export add_qr
 export triangularize_factor
-# export X_A_Xt
+export X_A_Xt
 export X_A_Xt!
 
 end
