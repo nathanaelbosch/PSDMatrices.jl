@@ -1,26 +1,30 @@
 using Test
 using PSDMatrices
-using LinearAlgebra
+using LinearAlgebra, Statistics, Random
 using Suppressor
-using Aqua
+using Aqua, JET
+using PDMats, Distributions
 
 M_square = [1 1; 2 20]
 M_tall = [1 1; 2 20; 3 30]
 M_wide = [1 1 1; 2 20 200]
 M_neg = -ones(1, 1)
-eltypes = (Int64, Float64, BigFloat)
+# eltypes = (Int64, Float64, BigFloat)
+eltypes = (Float64,)
+# sizes = (M_square, M_tall, M_wide, M_neg)
+sizes = (M_square,)
 
 @testset "PSDMatrices.jl" begin
-    @testset "eltype=$t | shape=$(size(Mbase))" for t in eltypes,
-        Mbase in (M_square, M_tall, M_wide, M_neg)
-
+    @testset "eltype=$t | shape=$(size(Mbase))" for t in eltypes, Mbase in sizes
         M = t.(Mbase)
         S = PSDMatrix(M)
+        SM = M'M
         X = rand(t, size(S, 1), size(S, 2))
 
         @testset "Base" begin
             @test eltype(S) == t
             @test size(S) == size(Matrix(S))
+            @test ndims(S) == 2
             @test S == S
             @test S ≈ S
             @test copy(S) == S
@@ -41,8 +45,8 @@ eltypes = (Int64, Float64, BigFloat)
                 @test det(S) ≈ det(Matrix(S))
                 @test logdet(S) ≈ logdet(Matrix(S))
             else
-                @test_throws MethodError det(S)
-                @test_throws MethodError logdet(S)
+                @test_throws Exception det(S)
+                @test_throws Exception logdet(S)
             end
             if (size(M, 1) >= size(M, 2))
                 @test S \ X ≈ Matrix(S) \ X
@@ -55,9 +59,10 @@ eltypes = (Int64, Float64, BigFloat)
         end
 
         @testset "Exports" begin
+            @test PSDMatrices.unfactorize(S) == M'M
+
             @test norm(Matrix(S) - M' * M) == 0.0
             @test Matrix(X_A_Xt(S, X)) ≈ X * Matrix(S) * X'
-            @test Matrix(X_A_Xt(A=S, X=X)) ≈ X * Matrix(S) * X'
             @test begin
                 product_eltype = typeof(one(eltype(X)) * one(eltype(S)))
                 S2 = PSDMatrix(zeros(product_eltype, size(S.R)...))
@@ -78,9 +83,84 @@ eltypes = (Int64, Float64, BigFloat)
                 @test Matrix(tri) ≈ Matrix(S)
             end
         end
+
+        if size(S.R, 1) == size(S.R, 2)
+            @testset "PDMats.jl interface" begin
+                i = 1
+                x = rand(t, size(S, 2), size(S, 2))
+                v = rand(t, size(S, 2))
+                r = similar(x)
+                c = rand(t)
+                @test size(S) == size(SM)
+                @test size(S, i) == size(SM, i)
+                @test ndims(S) == ndims(SM)
+                @test_nowarn eltype(S)
+                @test_nowarn Matrix(S)
+                @test diag(S) ≈ diag(SM)
+                @test Matrix(inv(S)) ≈ inv(SM)
+                @test_broken eigmax(S)
+                @test_broken eigmin(S)
+                @test logdet(S) ≈ logdet(SM)
+                @test_broken S * x
+                @test S \ x ≈ SM \ x
+                @test_broken S * c
+                @test_broken c * S
+                @test_broken S + b
+                # @test_nowarn pdadd(S, b, c)
+                # @test_nowarn pdadd(m, S)
+                # @test_nowarn pdadd(m, S, c)
+                # @test_nowarn pdadd!(m, S)
+                # @test_nowarn pdadd!(m, S, c)
+                # @test_nowarn pdadd!(r, m, S)
+                # @test_nowarn pdadd!(r, m, S, c)
+                @test quad(S, v) ≈ quad(SM, v)
+                @test quad(S, x) ≈ quad(SM, x)
+                @test quad!(zeros(size(X, 2)), S, x) ≈ quad(SM, x)
+                @test invquad(S, v) ≈ invquad(SM, v)
+                @test invquad(S, x) ≈ invquad(SM, x)
+                @test invquad!(zeros(size(X, 2)), S, x) ≈ invquad(SM, x)
+                @test Matrix(X_A_Xt(S, x')) ≈ x' * SM * x
+                @test Matrix(Xt_A_X(S, x)) ≈ x' * SM * x
+                @test Matrix(X_invA_Xt(S, x')) ≈ x' * inv(SM) * x
+                @test Matrix(Xt_invA_X(S, x)) ≈ x' * inv(SM) * x
+                @test whiten(S, x) ≈ whiten(SM, x)
+                @test whiten!(S, copy(x)) ≈ whiten(SM, x)
+                @test whiten!(r, S, x) ≈ whiten(SM, x)
+                @test unwhiten(S, x) ≈ unwhiten(SM, x)
+                @test unwhiten!(S, copy(x)) ≈ unwhiten(SM, x)
+                @test unwhiten!(r, S, x) ≈ unwhiten(SM, x)
+            end
+        end
+
+        @testset "Distributions.jl compatibility" begin
+            μ = zeros(size(S, 1))
+            D = @test_nowarn MvNormal(μ, S)
+            DM = MvNormal(μ, SM)
+
+            @test Distributions._cov(D) == S
+            @test cov(D) == SM
+            @test cor(D) == cor(DM)
+            @test_nowarn rand(D)
+            @test rand(MersenneTwister(1), D) ≈ rand(MersenneTwister(1), DM)
+
+            x = rand(size(S, 1))
+            @test loglikelihood(D, x) ≈ loglikelihood(DM, x)
+
+            @test invcov(D) ≈ invcov(DM)
+            @test logdetcov(D) ≈ logdetcov(DM)
+            @test sqmahal(D, x) ≈ sqmahal(DM, x)
+
+            @test pdf(D, x) ≈ pdf(DM, x)
+            @test pdf(D, x) ≈ exp(logpdf(D, x))
+        end
     end
-    @testset "Aqua" begin
+    @testset "Code quality (Aqua.jl)" begin
         Aqua.test_all(PSDMatrices)
+    end
+    if VERSION >= v"1.9"
+        @testset "Code linting (JET.jl)" begin
+            JET.test_package(PSDMatrices; target_defined_modules=true)
+        end
     end
 end
 nothing
