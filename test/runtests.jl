@@ -56,7 +56,12 @@ eltypes = (Int64, Float64, BigFloat)
 
         @testset "Exports" begin
             @test norm(Matrix(S) - M' * M) == 0.0
-            @test Matrix(X_A_Xt(S, X)) ≈ X * Matrix(S) * X'
+
+            SM = Matrix(S)
+            @test X_A_Xt(SM, X) ≈ X * SM * X'
+            @test X_A_Xt!(copy(SM), SM, X) ≈ X_A_Xt(SM, X) 
+
+            @test Matrix(X_A_Xt(S, X)) ≈ X_A_Xt(Matrix(S), X)
             @test begin
                 product_eltype = typeof(one(eltype(X)) * one(eltype(S)))
                 S2 = PSDMatrix(zeros(product_eltype, size(S.R)...))
