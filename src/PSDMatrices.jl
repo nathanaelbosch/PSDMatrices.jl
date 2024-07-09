@@ -71,13 +71,15 @@ end
 
 # Custom functions
 
-X_A_Xt(; A::PSDMatrix, X::AbstractMatrix) = PSDMatrix(A.R * X')
-X_A_Xt(A::PSDMatrix, X::AbstractMatrix) = X_A_Xt(A=A, X=X)
-function X_A_Xt!(out::PSDMatrix; A::PSDMatrix, X::AbstractMatrix)
+X_A_Xt(A::Number, X::Number) = X * A * X'
+X_A_Xt(A::AbstractMatrix, X::AbstractVecOrMat) = X * A * X'
+X_A_Xt(A::PSDMatrix, X::AbstractMatrix) = PSDMatrix(A.R * X')
+X_A_Xt!(out::AbstractMatrix, A::AbstractMatrix, X::AbstractMatrix) =
+    (out .= X * A * X'; out)
+function X_A_Xt!(out::PSDMatrix, A::PSDMatrix, X::AbstractMatrix)
     mul!(out.R, A.R, X')
     return out
 end
-X_A_Xt!(out::PSDMatrix, A::PSDMatrix, X::AbstractMatrix) = X_A_Xt!(out, A=A, X=X)
 
 function add_cholesky(A::PSDMatrix, B::PSDMatrix)
     sum_dense = Matrix(A) + Matrix(B)
