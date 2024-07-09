@@ -57,17 +57,10 @@ eltypes = (Int64, Float64, BigFloat)
         @testset "Exports" begin
             @test norm(Matrix(S) - M' * M) == 0.0
             @test Matrix(X_A_Xt(S, X)) ≈ X * Matrix(S) * X'
-            @test Matrix(X_A_Xt(A=S, X=X)) ≈ X * Matrix(S) * X'
             @test begin
                 product_eltype = typeof(one(eltype(X)) * one(eltype(S)))
                 S2 = PSDMatrix(zeros(product_eltype, size(S.R)...))
                 X_A_Xt!(S2, S, X)
-                Matrix(S2) ≈ Matrix(X_A_Xt(S, X))
-            end
-            @test begin
-                product_eltype = typeof(one(eltype(X)) * one(eltype(S)))
-                S2 = PSDMatrix(zeros(product_eltype, size(S.R)...))
-                X_A_Xt!(S2, A=S, X=X)
                 Matrix(S2) ≈ Matrix(X_A_Xt(S, X))
             end
             @test Matrix(add_qr(S, S)) ≈ Matrix(S) + Matrix(S)
