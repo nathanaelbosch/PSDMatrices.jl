@@ -73,7 +73,8 @@ end
 
 X_A_Xt(A::AbstractMatrix, X::AbstractMatrix) = X * A * X'
 X_A_Xt(A::PSDMatrix, X::AbstractMatrix) = PSDMatrix(A.R * X')
-X_A_Xt!(out::AbstractMatrix, A::PSDMatrix, X::AbstractMatrix) = (out .= X * A * X'; out)
+X_A_Xt!(out::AbstractMatrix, A::AbstractMatrix, X::AbstractMatrix) = 
+    (out .= X * A * X'; out)
 function X_A_Xt!(out::PSDMatrix, A::PSDMatrix, X::AbstractMatrix)
     mul!(out.R, A.R, X')
     return out
