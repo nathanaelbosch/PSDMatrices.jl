@@ -59,7 +59,7 @@ eltypes = (Int64, Float64, BigFloat)
 
             SM = Matrix(S)
             @test X_A_Xt(SM, X) ≈ X * SM * X'
-            @test X_A_Xt!(copy(SM), SM, X) ≈ X_A_Xt(SM, X) 
+            @test X_A_Xt!(copy(SM), SM, X) ≈ X_A_Xt(SM, X)
 
             @test Matrix(X_A_Xt(S, X)) ≈ X_A_Xt(Matrix(S), X)
             @test begin
