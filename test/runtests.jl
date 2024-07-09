@@ -57,9 +57,9 @@ eltypes = (Int64, Float64, BigFloat)
         @testset "Exports" begin
             @test norm(Matrix(S) - M' * M) == 0.0
 
-            @test let x=rand(t), a=rand(t)
+            @test let x = rand(t), a = rand(t)
                 X_A_Xt(a, x) ≈ x * a * x'
-            end 
+            end
 
             SM = Matrix(S)
             @test X_A_Xt(SM, X) ≈ X * SM * X'
