@@ -2,6 +2,7 @@
 Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 PSDMatrices = "fe68d972-6fd8-4755-bdf0-97d4c54cefdc"
+RecursiveArrayTools = "731186ca-8d62-57ce-b412-fbd966d074cd"
 Suppressor = "fd094767-a336-5f1f-9728-57cf17d0bbfb"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 

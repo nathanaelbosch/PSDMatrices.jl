@@ -1,6 +1,7 @@
 using Test
 using PSDMatrices
 using LinearAlgebra
+using RecursiveArrayTools
 using Suppressor
 using Aqua
 
@@ -27,6 +28,9 @@ eltypes = (Int64, Float64, BigFloat)
             @test !(copy(S) === S)
             @test typeof(similar(S)) == typeof(S)
             @test (S2 = similar(S); copy!(S2, S); S2 == S)
+            @test recursivecopy(S) == S
+            @test !(recursivecopy(S) === S)
+            @test (S2 = similar(S); recursivecopy!(S2, S); S2 == S)
             if size(M, 1) == size(M, 2)
                 @test Matrix(inv(S)) ≈ inv(Matrix(S))
             end
