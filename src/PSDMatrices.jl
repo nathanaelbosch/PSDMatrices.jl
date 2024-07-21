@@ -3,7 +3,7 @@ module PSDMatrices
 
 import Base: \, /, size, inv, copy, copy!, ==, show, similar, Matrix, iszero, isapprox
 using LinearAlgebra
-import LinearAlgebra: det, logabsdet, diag
+import LinearAlgebra: det, logabsdet, diag, issymmetric, Symmetric
 
 struct PSDMatrix{T,FactorType} <: AbstractMatrix{T}
     R::FactorType
@@ -68,6 +68,9 @@ function confirm_factor_is_square(M::PSDMatrix)
         throw(MethodError(msg))
     end
 end
+
+issymmetric(::PSDMatrix) = true
+Symmetric(M::PSDMatrix) = M
 
 # Custom functions
 
